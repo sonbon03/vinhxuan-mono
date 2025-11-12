@@ -1,0 +1,126 @@
+# Production Docker Compose for Railway/VPS Deployment
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: vinhxuan-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE:-vinhxuan_db}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-postgres}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vinhxuan-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: vinhxuan-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vinhxuan-network
+
+  # NestJS Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: vinhxuan-backend
+    restart: always
+    ports:
+      - "${PORT:-8830}:8830"
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-8830}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE:-vinhxuan_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-1d}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      UPLOAD_DIR: ${UPLOAD_DIR:-uploads}
+    volumes:
+      - uploads_data:/app/apps/backend/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8830/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - vinhxuan-network
+
+  # Optional: Admin Frontend (if deploying on same server)
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/frontend/Dockerfile
+  #   container_name: vinhxuan-frontend
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     VITE_API_URL: ${VITE_API_URL}
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - vinhxuan-network
+
+  # Optional: User Frontend (if deploying on same server)
+  # user-frontend:
+  #   build:
+  #     context: apps/user-frontend
+  #     dockerfile: Dockerfile
+  #   container_name: vinhxuan-user-frontend
+  #   restart: always
+  #   ports:
+  #     - "8088:8088"
+  #   environment:
+  #     VITE_API_URL: ${VITE_API_URL}
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - vinhxuan-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads_data:
+    driver: local
+
+networks:
+  vinhxuan-network:
+    driver: bridge

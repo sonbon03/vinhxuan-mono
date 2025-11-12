@@ -1,0 +1,47 @@
+{
+  "name": "vinhxuan-cms",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"backend,admin,user\" -c \"blue,green,yellow\" \"yarn workspace backend dev\" \"yarn workspace frontend dev\" \"yarn workspace @vinhxuan/user-frontend dev\"",
+    "dev:backend": "yarn workspace backend dev",
+    "dev:frontend": "yarn workspace frontend dev",
+    "dev:user": "yarn workspace @vinhxuan/user-frontend dev",
+    "dev:backend:watch": "yarn workspace backend dev:watch",
+    "start": "yarn dev",
+    "start:backend": "cd apps/backend && yarn dev",
+    "start:frontend": "cd apps/frontend && yarn dev",
+    "start:user": "cd apps/user-frontend && yarn dev",
+    "build": "yarn build:backend && yarn build:frontend && yarn build:user",
+    "build:backend": "yarn workspace backend build",
+    "build:frontend": "yarn workspace frontend build",
+    "build:user": "yarn workspace @vinhxuan/user-frontend build",
+    "build:shared": "yarn workspace @vinhxuan/shared build",
+    "test": "yarn workspaces run test",
+    "test:backend": "yarn workspace backend test",
+    "test:frontend": "yarn workspace frontend test",
+    "lint": "yarn workspaces run lint",
+    "lint:fix": "yarn workspace backend lint:fix && yarn workspace frontend lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "yarn workspaces run typecheck",
+    "clean": "yarn workspaces run clean && rm -rf node_modules",
+    "install:all": "yarn install",
+    "postinstall": "echo '\n✅ Installation complete! Run \"yarn dev\" to start development servers.\n'"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": ">=1.22.0"
+  }
+}

@@ -1,0 +1,13 @@
+services:
+  app:
+    container_name: seo-notarization-fe
+    image: pandacyan/seo-notarization-fe:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    env_file:
+      - .env
+    network_mode: host
