@@ -6,9 +6,16 @@ WORKDIR /app
 
 # Copy root package.json and yarn.lock for workspace resolution
 COPY package.json yarn.lock ./
+
+# Copy workspace packages
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+
+# Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/
 
-# Install dependencies
+# Install dependencies (this will resolve @vinhxuan/shared from workspace)
 RUN yarn install --frozen-lockfile
 
 # Copy backend source code
@@ -29,6 +36,13 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json yarn.lock ./
+
+# Copy workspace packages (needed for production dependencies)
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+
+# Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/
 
 # Install only production dependencies
