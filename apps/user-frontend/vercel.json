@@ -23,9 +23,6 @@
       "dest": "/index.html"
     }
   ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url"
-  },
   "buildCommand": "yarn build",
   "outputDirectory": "dist",
   "framework": "vite",
