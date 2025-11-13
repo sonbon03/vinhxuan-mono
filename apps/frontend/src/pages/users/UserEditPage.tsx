@@ -3,7 +3,7 @@ import { SaveOutlined, UserOutlined, MailOutlined, PhoneOutlined, CalendarOutlin
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { userService } from '@/services/user.service';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { PageContainer } from '@/components/common/PageContainer';

@@ -1,5 +1,5 @@
 import api from './api';
-import { CreateUserDto, UpdateUserDto, UserRole } from '@shared';
+import { CreateUserDto, UpdateUserDto, UserRole } from '@/types';
 import type { PaginatedData } from '../types/api.types';
 
 export interface User {

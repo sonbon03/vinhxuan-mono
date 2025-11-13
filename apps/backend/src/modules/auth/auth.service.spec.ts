@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {

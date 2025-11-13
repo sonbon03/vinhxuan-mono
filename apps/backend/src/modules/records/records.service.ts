@@ -6,7 +6,7 @@ import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
 import { QueryRecordsDto } from './dto/query-records.dto';
 import { ReviewRecordDto } from './dto/review-record.dto';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 @Injectable()
 export class RecordsService {

@@ -1,5 +1,5 @@
 import api from './api';
-import { LoginDto, RegisterDto, AuthResponse } from '@shared';
+import { LoginDto, RegisterDto, AuthResponse } from '@/types';
 
 export const authService = {
   login: async (loginDto: LoginDto): Promise<AuthResponse> => {

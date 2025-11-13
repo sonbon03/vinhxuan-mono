@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAuthStore } from '@/store/auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 /**
  * Custom hook to access authentication state and utilities

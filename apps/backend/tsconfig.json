@@ -10,8 +10,7 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "../../",
-    "rootDir": "../../",
+    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -20,9 +19,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@shared/*": ["packages/shared/dist/*"],
-      "@shared": ["packages/shared/dist"],
-      "@backend/*": ["apps/backend/src/*"]
+      "src/*": ["src/*"]
     }
   },
   "include": ["src/**/*"],

@@ -22,7 +22,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useAuthStore } from '../../store/auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 const { Sider } = Layout;
 

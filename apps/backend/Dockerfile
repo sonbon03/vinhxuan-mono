@@ -7,11 +7,6 @@ WORKDIR /app
 # Copy workspace root files
 COPY package.json yarn.lock tsconfig.base.json ./
 
-# Copy shared package (workspace dependency)
-COPY packages/shared/package.json ./packages/shared/package.json
-COPY packages/shared/tsconfig.json ./packages/shared/tsconfig.json
-COPY packages/shared/src ./packages/shared/src
-
 # Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/package.json
 
@@ -40,11 +35,6 @@ WORKDIR /app
 # Copy workspace root files
 COPY package.json yarn.lock tsconfig.base.json ./
 
-# Copy shared package (needed for workspace resolution)
-COPY packages/shared/package.json ./packages/shared/package.json
-COPY packages/shared/tsconfig.json ./packages/shared/tsconfig.json
-COPY packages/shared/src ./packages/shared/src
-
 # Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/package.json
 
@@ -69,10 +59,10 @@ RUN addgroup -g 1001 -S nodejs && \
 USER nestjs
 
 # Expose port
-EXPOSE 8830
+EXPOSE 3000
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/apps/backend/src/main.js"]

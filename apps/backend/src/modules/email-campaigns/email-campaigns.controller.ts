@@ -19,7 +19,7 @@ import { QueryEmailCampaignsDto } from './dto/query-email-campaigns.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 @ApiTags('Email Campaigns')
 @Controller('email-campaigns')

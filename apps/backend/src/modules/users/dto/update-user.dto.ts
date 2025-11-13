@@ -11,7 +11,7 @@ import {
   Min,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({
@@ -33,6 +33,17 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail({}, { message: 'Please provide a valid email address' })
   email?: string;
+
+  @ApiPropertyOptional({
+    description: 'User password (minimum 8 characters)',
+    example: 'NewSecurePassword123',
+    minLength: 8,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  password?: string;
 
   @ApiPropertyOptional({
     description: 'Phone number of the user',

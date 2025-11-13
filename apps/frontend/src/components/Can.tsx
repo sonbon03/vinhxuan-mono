@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { usePermissions } from '@/hooks/usePermissions';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 interface CanProps {
   /**

@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/store/auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 /**
  * Custom hook to check user permissions based on roles

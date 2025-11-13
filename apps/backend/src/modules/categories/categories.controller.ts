@@ -18,7 +18,7 @@ import { QueryCategoriesDto } from './dto/query-categories.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 @ApiTags('Categories')
 @Controller('categories')

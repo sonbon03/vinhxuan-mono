@@ -12,7 +12,7 @@ import { UpdateConsultationDto } from './dto/update-consultation.dto';
 import { QueryConsultationsDto } from './dto/query-consultations.dto';
 import { ApproveConsultationDto } from './dto/approve-consultation.dto';
 import { CancelConsultationDto } from './dto/cancel-consultation.dto';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 import { ResponseUtil } from '../common/utils/response.util';
 
 @Injectable()

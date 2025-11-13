@@ -9,7 +9,7 @@ import { UpdateListingDto } from './dto/update-listing.dto';
 import { QueryListingsDto } from './dto/query-listings.dto';
 import { ReviewListingDto } from './dto/review-listing.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 import { ResponseUtil } from '../common/utils/response.util';
 
 @Injectable()

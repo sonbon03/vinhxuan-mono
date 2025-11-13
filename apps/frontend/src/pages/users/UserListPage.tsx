@@ -12,7 +12,7 @@ import { ProTable, ActionType, ProColumns } from '@ant-design/pro-components';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService, User } from '@/services/user.service';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 import Can from '@/components/Can';
 import dayjs from 'dayjs';
 

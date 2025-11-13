@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsEnum, IsBoolean, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 export class QueryUsersDto {
   @ApiPropertyOptional({ description: 'Page number', minimum: 1, default: 1 })

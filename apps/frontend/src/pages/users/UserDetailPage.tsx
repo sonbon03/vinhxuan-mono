@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { userService } from '../../services/user.service';
 import { usePermissions } from '../../hooks/usePermissions';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 import dayjs from 'dayjs';
 import { PageContainer } from '@/components/common/PageContainer';
 

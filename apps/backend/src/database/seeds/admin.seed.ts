@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../modules/users/entities/user.entity';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 export async function seedAdmin(dataSource: DataSource): Promise<void> {
   const userRepository = dataSource.getRepository(User);

@@ -10,7 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 export class CreateUserDto {
   @ApiProperty({

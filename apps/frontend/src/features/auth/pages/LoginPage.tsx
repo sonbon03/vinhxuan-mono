@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth.store';
-import { LoginDto, UserRole } from '@shared';
+import { LoginDto, UserRole } from '@/types';
 
 const { Title } = Typography;
 

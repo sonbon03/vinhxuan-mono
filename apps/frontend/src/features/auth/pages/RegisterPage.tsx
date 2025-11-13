@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth.store';
-import { RegisterDto } from '@shared';
+import { RegisterDto } from '@/types';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;

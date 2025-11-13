@@ -18,11 +18,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["../../packages/shared/dist/*"],
-      "@shared": ["../../packages/shared/dist"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../packages/shared/src"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

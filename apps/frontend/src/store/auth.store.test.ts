@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from './auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 // Mock localStorage
 const localStorageMock = (() => {

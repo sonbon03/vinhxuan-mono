@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "dev": "concurrently -n \"backend,admin,user\" -c \"blue,green,yellow\" \"yarn workspace backend dev\" \"yarn workspace frontend dev\" \"yarn workspace @vinhxuan/user-frontend dev\"",
@@ -20,7 +19,6 @@
     "build:backend": "yarn workspace backend build",
     "build:frontend": "yarn workspace frontend build",
     "build:user": "yarn workspace @vinhxuan/user-frontend build",
-    "build:shared": "yarn workspace @vinhxuan/shared build",
     "test": "yarn workspaces run test",
     "test:backend": "yarn workspace backend test",
     "test:frontend": "yarn workspace frontend test",

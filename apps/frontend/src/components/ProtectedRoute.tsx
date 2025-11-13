@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 import { Result, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { usePermissions } from './usePermissions';
 import { useAuthStore } from '@/store/auth.store';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 describe('usePermissions', () => {
   beforeEach(() => {

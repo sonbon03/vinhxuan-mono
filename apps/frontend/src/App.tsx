@@ -58,7 +58,7 @@ import MyConsultationsPage from './pages/dashboard/MyConsultationsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ChatWidget from './components/ChatWidget';
 import MainLayout from './layouts/MainLayout';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 import './App.css';
 
 const queryClient = new QueryClient({

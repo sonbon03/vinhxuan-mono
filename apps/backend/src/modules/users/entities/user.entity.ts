@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToOne,
 } from 'typeorm';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 import { Employee } from '../../employees/entities/employee.entity';
 
 @Entity('users')

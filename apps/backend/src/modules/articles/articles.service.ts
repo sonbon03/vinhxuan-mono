@@ -5,7 +5,7 @@ import { Article, ArticleStatus, ArticleType } from './entities/article.entity';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { QueryArticlesDto } from './dto/query-articles.dto';
-import { UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 
 @Injectable()
 export class ArticlesService {

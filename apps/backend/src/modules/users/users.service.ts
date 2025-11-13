@@ -2,8 +2,10 @@ import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, FindOptionsWhere } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto, UpdateUserDto, UserRole } from '@shared';
+import { UserRole } from 'src/common/enums';
 import { QueryUsersDto } from './dto/query-users.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { EmployeesService } from '../employees/employees.service';
 import { EmployeeStatus } from '../employees/entities/employee.entity';

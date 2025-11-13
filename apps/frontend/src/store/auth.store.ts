@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UserRole } from '@shared';
+import { UserRole } from '@/types';
 
 export interface User {
   id: string;

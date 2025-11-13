@@ -13,7 +13,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { userService } from '@/services/user.service';
-import { CreateUserDto, UserRole } from '@shared';
+import { CreateUserDto, UserRole } from '@/types';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { PageContainer } from '@/components/common/PageContainer';
