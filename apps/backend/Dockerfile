@@ -1,22 +1,31 @@
 # Multi-stage build for NestJS Backend
 FROM node:20-alpine AS builder
 
-# Set working directory
+# Set working directory to mimic monorepo structure
 WORKDIR /app
 
-# Copy backend package.json and yarn.lock from root
-COPY apps/backend/package.json ./package.json
-COPY yarn.lock ./yarn.lock
+# Copy workspace root files
+COPY package.json yarn.lock tsconfig.base.json ./
 
-# Install dependencies
+# Copy shared package (workspace dependency)
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY packages/shared/tsconfig.json ./packages/shared/tsconfig.json
+COPY packages/shared/src ./packages/shared/src
+
+# Copy backend package.json
+COPY apps/backend/package.json ./apps/backend/package.json
+
+# Install all dependencies (yarn will resolve workspace)
+WORKDIR /app
 RUN yarn install --frozen-lockfile
 
 # Copy backend source code
-COPY apps/backend/src ./src
-COPY apps/backend/tsconfig.json ./tsconfig.json
-COPY apps/backend/nest-cli.json ./nest-cli.json
+COPY apps/backend/src ./apps/backend/src
+COPY apps/backend/tsconfig.json ./apps/backend/tsconfig.json
+COPY apps/backend/nest-cli.json ./apps/backend/nest-cli.json
 
-# Build the application
+# Build the backend
+WORKDIR /app/apps/backend
 RUN yarn build
 
 # Production stage
@@ -28,18 +37,28 @@ RUN apk add --no-cache dumb-init
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY apps/backend/package.json ./package.json
-COPY yarn.lock ./yarn.lock
+# Copy workspace root files
+COPY package.json yarn.lock tsconfig.base.json ./
 
-# Install only production dependencies
+# Copy shared package (needed for workspace resolution)
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY packages/shared/tsconfig.json ./packages/shared/tsconfig.json
+COPY packages/shared/src ./packages/shared/src
+
+# Copy backend package.json
+COPY apps/backend/package.json ./apps/backend/package.json
+
+# Install production dependencies
 RUN yarn install --frozen-lockfile --production
 
 # Copy built application from builder
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 
 # Copy RSA keys (if they exist)
-COPY apps/backend/keys ./keys
+COPY apps/backend/keys ./apps/backend/keys
+
+# Set working directory to backend
+WORKDIR /app/apps/backend
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
