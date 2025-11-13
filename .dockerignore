@@ -1,0 +1,72 @@
+# Ignore all node_modules across the monorepo
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+**/yarn-debug.log
+**/.pnpm-debug.log
+
+# Ignore frontend apps (we're only building backend)
+apps/frontend
+apps/user-frontend
+
+# Ignore development and test files
+**/*.spec.ts
+**/*.test.ts
+**/test
+**/tests
+**/coverage
+**/.nyc_output
+
+# Ignore environment files (will be provided by Railway)
+**/.env
+**/.env.local
+**/.env.development
+**/.env.test
+**/.env.production.local
+**/keys/*.pem
+**/keys/*.key
+
+# Ignore IDE and OS files
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+**/*~
+**/.DS_Store
+**/Thumbs.db
+
+# Ignore git files
+.git
+.gitignore
+.gitattributes
+
+# Ignore build outputs (we'll build fresh in Docker)
+**/dist
+**/build
+**/.next
+**/.nuxt
+
+# Ignore documentation (not needed for runtime)
+**/*.md
+**/docs
+*.md
+
+# Ignore CI/CD files
+.github
+**/.gitlab-ci.yml
+**/.travis.yml
+
+# Ignore docker files themselves
+**/Dockerfile
+**/docker-compose*.yml
+**/.dockerignore
+
+# Ignore scripts not needed in production
+scripts
+nginx
+
+# Keep only what's needed:
+# - apps/backend/src (source code)
+# - apps/backend/package.json
+# - packages/shared (workspace dependency)
+# - Root workspace files (package.json, yarn.lock, tsconfig.base.json)

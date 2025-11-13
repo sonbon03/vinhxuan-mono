@@ -4,19 +4,23 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy root package.json, yarn.lock, and tsconfig.base.json for workspace resolution
+# Copy workspace configuration files (build context is vinhxuan-cms root)
 COPY package.json yarn.lock tsconfig.base.json ./
 
-# Copy workspace packages (copy entire directory to ensure nothing is missing)
-COPY packages/shared ./packages/shared
+# Create workspace structure
+RUN mkdir -p packages/shared apps/backend
 
-# Copy backend package.json
-COPY apps/backend/package.json ./apps/backend/
+# Copy shared package completely (all files needed for workspace resolution)
+COPY packages/shared ./packages/shared/
 
-# Install dependencies (this will resolve @vinhxuan/shared from workspace)
+# Copy backend package.json for dependency resolution
+COPY apps/backend/package.json ./apps/backend/package.json
+
+# Install ALL dependencies (including workspace dependencies)
+# Yarn will resolve @vinhxuan/shared from the workspace
 RUN yarn install --frozen-lockfile
 
-# Copy backend source code
+# Now copy the actual backend source code
 COPY apps/backend ./apps/backend
 
 # Build the backend application
@@ -32,16 +36,19 @@ RUN apk add --no-cache dumb-init
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy workspace configuration files
 COPY package.json yarn.lock tsconfig.base.json ./
 
-# Copy workspace packages (needed for production dependencies)
-COPY packages/shared ./packages/shared
+# Create workspace structure
+RUN mkdir -p packages/shared apps/backend
+
+# Copy workspace packages (needed for production dependencies resolution)
+COPY packages/shared ./packages/shared/
 
 # Copy backend package.json
-COPY apps/backend/package.json ./apps/backend/
+COPY apps/backend/package.json ./apps/backend/package.json
 
-# Install only production dependencies
+# Install only production dependencies (yarn will resolve workspace deps)
 RUN yarn install --frozen-lockfile --production
 
 # Copy built application from builder
