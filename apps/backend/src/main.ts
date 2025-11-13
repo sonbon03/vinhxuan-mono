@@ -14,6 +14,9 @@ async function bootstrap() {
     exclude: [{ path: '/', method: RequestMethod.ALL }],
   });
 
+  console.log('Global prefix excluded: /');
+  console.log('Global prefix excluded: health');
+
   // Enable CORS
   const corsOriginEnv = process.env.CORS_ORIGIN;
   const allowedOrigins = corsOriginEnv
@@ -27,6 +30,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  console.log('CORS enabled for origins:', allowedOrigins);
+
   // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
 
@@ -36,6 +41,8 @@ async function bootstrap() {
     new LoggingInterceptor(), // Log all requests and responses
   );
 
+  console.log('Global exception filter enabled');
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -44,6 +51,10 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  console.log('Global validation pipe enabled');
+
+  console.log('Swagger documentation enabled');
 
   // Swagger documentation
   const config = new DocumentBuilder()
@@ -55,8 +66,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
+  console.log('Swagger documentation setup complete');
+
   const port = process.env.PORT || 8830;
+
+  console.log('Starting application on port:', port);
   await app.listen(port, '0.0.0.0');
+
   console.log(`🚀 Application is running on: http://localhost:${port}`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
 }
