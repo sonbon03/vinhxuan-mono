@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // Global prefix
   app.setGlobalPrefix('api', {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
+    exclude: [{ path: '/', method: RequestMethod.ALL }],
   });
 
   // Enable CORS
