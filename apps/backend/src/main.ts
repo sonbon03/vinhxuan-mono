@@ -11,7 +11,10 @@ async function bootstrap() {
 
   // Global prefix
   app.setGlobalPrefix('api', {
-    exclude: [{ path: 'health', method: RequestMethod.GET }],
+    exclude: [
+      { path: '/', method: RequestMethod.ALL },
+      { path: 'health', method: RequestMethod.GET },
+    ],
   });
 
   // Enable CORS
@@ -56,7 +59,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 8830;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 Application is running on: http://localhost:${port}`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
 }
