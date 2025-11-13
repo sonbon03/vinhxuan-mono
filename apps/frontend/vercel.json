@@ -1,6 +1,10 @@
 {
   "version": 2,
   "name": "vinhxuan-admin",
+  "buildCommand": "cd ../.. && yarn install && cd apps/frontend && yarn build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "cd ../.. && yarn install",
   "builds": [
     {
       "src": "package.json",
@@ -22,9 +26,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "buildCommand": "yarn build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "installCommand": "yarn install"
+  ]
 }
