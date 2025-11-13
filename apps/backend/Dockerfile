@@ -54,8 +54,8 @@ RUN yarn install --frozen-lockfile --production
 # Copy built application from builder
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 
-# Copy RSA keys (if they exist)
-COPY apps/backend/keys ./apps/backend/keys
+# Create keys directory (RSA keys will come from environment variables in Railway)
+RUN mkdir -p ./apps/backend/keys
 
 # Set working directory to backend
 WORKDIR /app/apps/backend
