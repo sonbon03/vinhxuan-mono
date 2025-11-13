@@ -17,7 +17,7 @@ COPY apps/backend/package.json ./apps/backend/package.json
 
 # Install all dependencies (yarn will resolve workspace)
 WORKDIR /app
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 600000
 
 # Copy backend source code
 COPY apps/backend/src ./apps/backend/src
@@ -49,7 +49,7 @@ COPY packages/shared/src ./packages/shared/src
 COPY apps/backend/package.json ./apps/backend/package.json
 
 # Install production dependencies
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile --production --network-timeout 600000
 
 # Copy built application from builder
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
@@ -70,10 +70,6 @@ USER nestjs
 
 # Expose port
 EXPOSE 8830
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8830/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
