@@ -4,13 +4,11 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy root package.json and yarn.lock for workspace resolution
-COPY package.json yarn.lock ./
+# Copy root package.json, yarn.lock, and tsconfig.base.json for workspace resolution
+COPY package.json yarn.lock tsconfig.base.json ./
 
-# Copy workspace packages
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/shared/src ./packages/shared/src
-COPY packages/shared/tsconfig.json ./packages/shared/
+# Copy workspace packages (copy entire directory to ensure nothing is missing)
+COPY packages/shared ./packages/shared
 
 # Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/
@@ -35,12 +33,10 @@ RUN apk add --no-cache dumb-init
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock tsconfig.base.json ./
 
 # Copy workspace packages (needed for production dependencies)
-COPY packages/shared/package.json ./packages/shared/
-COPY packages/shared/src ./packages/shared/src
-COPY packages/shared/tsconfig.json ./packages/shared/
+COPY packages/shared ./packages/shared
 
 # Copy backend package.json
 COPY apps/backend/package.json ./apps/backend/
