@@ -16,7 +16,7 @@
     "start:backend": "cd apps/backend && yarn dev",
     "start:frontend": "cd apps/frontend && yarn dev",
     "start:user": "cd apps/user-frontend && yarn dev",
-    "build": "yarn build:backend && yarn build:frontend && yarn build:user",
+    "build": "yarn build:backend",
     "build:backend": "yarn workspace backend build",
     "build:frontend": "yarn workspace frontend build",
     "build:user": "yarn workspace @vinhxuan/user-frontend build",
