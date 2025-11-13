@@ -13,7 +13,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('health')
+  @Get('/health')
   @ApiOperation({ summary: 'Health check' })
   healthCheck() {
     // Simple health check that works even if DB/Redis are down
