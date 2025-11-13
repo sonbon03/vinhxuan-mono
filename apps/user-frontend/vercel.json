@@ -23,8 +23,8 @@
       "dest": "/index.html"
     }
   ],
-  "buildCommand": "yarn build",
+  "buildCommand": "cd ../.. && yarn install && yarn workspace @vinhxuan/shared build && cd apps/user-frontend && yarn build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "yarn install"
+  "installCommand": "cd ../.. && yarn install"
 }

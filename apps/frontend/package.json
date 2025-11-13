@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:prod": "yarn typecheck && vite build",
+    "build": "yarn build:shared && vite build",
+    "build:shared": "cd ../../packages/shared && yarn build",
+    "build:prod": "yarn build:shared && yarn typecheck && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest --watch",

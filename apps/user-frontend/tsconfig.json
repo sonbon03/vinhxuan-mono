@@ -4,7 +4,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@shared/*": ["../../packages/shared/dist/*"],
+      "@shared": ["../../packages/shared/dist"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
