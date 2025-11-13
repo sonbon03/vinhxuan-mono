@@ -34,8 +34,8 @@ export interface CreateUserDto {
   fullName: string;
   email: string;
   password: string;
-  phone: string;
-  dateOfBirth: Date;
+  phone?: string;
+  dateOfBirth?: Date;
   role?: UserRole;
   // Employee fields (only used when role is ADMIN or STAFF)
   position?: string;
@@ -48,6 +48,7 @@ export interface CreateUserDto {
 export interface UpdateUserDto {
   fullName?: string;
   email?: string;
+  password?: string;
   phone?: string;
   dateOfBirth?: Date;
   role?: UserRole;

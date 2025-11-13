@@ -20,11 +20,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@shared/*": ["packages/shared/src/*"],
-      "@shared": ["packages/shared/src"],
+      "@shared/*": ["packages/shared/dist/*"],
+      "@shared": ["packages/shared/dist"],
       "@backend/*": ["apps/backend/src/*"]
     }
   },
-  "include": ["src/**/*", "../../packages/shared/src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
 }

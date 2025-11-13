@@ -6,9 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild:shared": "yarn workspace @vinhxuan/shared build",
     "dev": "ts-node -r tsconfig-paths/register --transpile-only src/main.ts",
     "dev:watch": "nodemon --watch src --ext ts --exec 'ts-node -r tsconfig-paths/register --transpile-only src/main.ts'",
-    "build": "nest build",
+    "build": "yarn workspace @vinhxuan/shared build && nest build",
     "start": "node dist/main",
     "start:prod": "node dist/main",
     "test": "jest",

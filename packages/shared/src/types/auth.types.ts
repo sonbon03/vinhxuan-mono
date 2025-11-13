@@ -15,8 +15,8 @@ export interface RegisterDto {
   fullName: string;
   email: string;
   password: string;
-  phone: string;
-  dateOfBirth: Date;
+  phone?: string;
+  dateOfBirth?: Date;
 }
 
 /**
@@ -44,7 +44,8 @@ export interface RefreshTokenDto {
  * JWT Payload
  */
 export interface JwtPayload {
-  sub: string; // user id
+  sub: string; // user id (JWT standard)
+  userId: string; // user id (alias for convenience)
   email: string;
   role: UserRole;
   iat?: number;
