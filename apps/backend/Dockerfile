@@ -4,27 +4,19 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy workspace configuration files (build context is vinhxuan-cms root)
-COPY package.json yarn.lock tsconfig.base.json ./
+# Copy backend package.json and yarn.lock from root
+COPY apps/backend/package.json ./package.json
+COPY yarn.lock ./yarn.lock
 
-# Create workspace structure
-RUN mkdir -p packages/shared apps/backend
-
-# Copy shared package completely (all files needed for workspace resolution)
-COPY packages/shared ./packages/shared/
-
-# Copy backend package.json for dependency resolution
-COPY apps/backend/package.json ./apps/backend/package.json
-
-# Install ALL dependencies (including workspace dependencies)
-# Yarn will resolve @vinhxuan/shared from the workspace
+# Install dependencies
 RUN yarn install --frozen-lockfile
 
-# Now copy the actual backend source code
-COPY apps/backend ./apps/backend
+# Copy backend source code
+COPY apps/backend/src ./src
+COPY apps/backend/tsconfig.json ./tsconfig.json
+COPY apps/backend/nest-cli.json ./nest-cli.json
 
-# Build the backend application
-WORKDIR /app/apps/backend
+# Build the application
 RUN yarn build
 
 # Production stage
@@ -36,29 +28,18 @@ RUN apk add --no-cache dumb-init
 # Set working directory
 WORKDIR /app
 
-# Copy workspace configuration files
-COPY package.json yarn.lock tsconfig.base.json ./
+# Copy package files
+COPY apps/backend/package.json ./package.json
+COPY yarn.lock ./yarn.lock
 
-# Create workspace structure
-RUN mkdir -p packages/shared apps/backend
-
-# Copy workspace packages (needed for production dependencies resolution)
-COPY packages/shared ./packages/shared/
-
-# Copy backend package.json
-COPY apps/backend/package.json ./apps/backend/package.json
-
-# Install only production dependencies (yarn will resolve workspace deps)
+# Install only production dependencies
 RUN yarn install --frozen-lockfile --production
 
 # Copy built application from builder
-COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/dist ./dist
 
 # Copy RSA keys (if they exist)
-COPY apps/backend/keys ./apps/backend/keys
-
-# Set working directory to backend
-WORKDIR /app/apps/backend
+COPY apps/backend/keys ./keys
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
