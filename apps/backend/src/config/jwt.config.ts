@@ -35,7 +35,7 @@ let privateKey: string;
 let publicKey: string;
 
 /**
- * Validate that a key is a valid RSA key
+ * Validate that a key is a valid RSA key format
  */
 function validateRSAKey(key: string, keyType: 'private' | 'public'): void {
   if (!key || typeof key !== 'string' || key.trim().length === 0) {
@@ -52,16 +52,16 @@ function validateRSAKey(key: string, keyType: 'private' | 'public'): void {
       !trimmedKey.includes('BEGIN RSA PRIVATE KEY')
     ) {
       throw new Error(
-        `JWT private key is not a valid RSA private key. Expected PEM format with "BEGIN PRIVATE KEY" or "BEGIN RSA PRIVATE KEY".\n` +
-          `Current key starts with: ${trimmedKey.substring(0, 50)}...\n` +
+        `JWT private key is not a valid RSA private key. Expected PEM format.\n` +
+          `Key preview: ${trimmedKey.substring(0, 100)}...\n` +
           `Please ensure JWT_PRIVATE_KEY is a valid RSA private key in PEM format.`,
       );
     }
   } else {
     if (!trimmedKey.includes('BEGIN PUBLIC KEY')) {
       throw new Error(
-        `JWT public key is not a valid RSA public key. Expected PEM format with "BEGIN PUBLIC KEY".\n` +
-          `Current key starts with: ${trimmedKey.substring(0, 50)}...\n` +
+        `JWT public key is not a valid RSA public key. Expected PEM format.\n` +
+          `Key preview: ${trimmedKey.substring(0, 100)}...\n` +
           `Please ensure JWT_PUBLIC_KEY is a valid RSA public key in PEM format.`,
       );
     }
@@ -86,26 +86,29 @@ try {
     validateRSAKey(publicKey, 'public');
 
     console.log('✅ JWT RSA keys loaded from environment variables');
+    console.log(`   Private key length: ${privateKey.length} chars`);
+    console.log(`   Public key length: ${publicKey.length} chars`);
   } else {
     // Fallback to reading from files
-    console.log('⚠️  JWT_PRIVATE_KEY and JWT_PUBLIC_KEY not found in .env');
+    console.log('⚠️  JWT_PRIVATE_KEY and JWT_PUBLIC_KEY not found in environment variables');
     console.log('📁 Attempting to load RSA keys from files...');
 
-    privateKey = readFileSync(
-      process.env.JWT_PRIVATE_KEY_PATH || join(KEYS_DIR, 'jwt-private.key'),
-      'utf8',
-    );
+    const privateKeyPath = process.env.JWT_PRIVATE_KEY_PATH || join(KEYS_DIR, 'jwt-private.key');
+    const publicKeyPath = process.env.JWT_PUBLIC_KEY_PATH || join(KEYS_DIR, 'jwt-public.key');
 
-    publicKey = readFileSync(
-      process.env.JWT_PUBLIC_KEY_PATH || join(KEYS_DIR, 'jwt-public.key'),
-      'utf8',
-    );
+    console.log(`   Looking for private key at: ${privateKeyPath}`);
+    console.log(`   Looking for public key at: ${publicKeyPath}`);
+
+    privateKey = readFileSync(privateKeyPath, 'utf8');
+    publicKey = readFileSync(publicKeyPath, 'utf8');
 
     // Validate keys are valid RSA keys
     validateRSAKey(privateKey, 'private');
     validateRSAKey(publicKey, 'public');
 
     console.log('✅ JWT RSA keys loaded from files');
+    console.log(`   Private key length: ${privateKey.length} chars`);
+    console.log(`   Public key length: ${publicKey.length} chars`);
   }
 } catch (error) {
   console.error('❌ Error loading RSA keys:', error);
@@ -114,10 +117,18 @@ try {
   }
   throw new Error(
     'RSA keys not found. Please either:\n' +
-      '1. Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY in .env, OR\n' +
+      '1. Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY in environment variables, OR\n' +
       '2. Generate key files using:\n' +
       '   openssl genrsa -out apps/backend/keys/jwt-private.key 4096\n' +
-      '   openssl rsa -in apps/backend/keys/jwt-private.key -pubout -out apps/backend/keys/jwt-public.key',
+      '   openssl rsa -in apps/backend/keys/jwt-private.key -pubout -out apps/backend/keys/jwt-public.key\n\n' +
+      `Error details: ${error instanceof Error ? error.message : String(error)}`,
+  );
+}
+
+// Final validation before export
+if (!privateKey || !publicKey) {
+  throw new Error(
+    'JWT keys are not properly initialized. Please check your environment variables or key files.',
   );
 }
 
