@@ -58,8 +58,8 @@ RUN addgroup -g 1001 -S nodejs && \
 # Switch to non-root user
 USER nestjs
 
-# Expose port
-EXPOSE 3000
+# Expose port (matches PORT env variable)
+EXPOSE 8830
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
