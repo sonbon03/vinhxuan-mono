@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { JwtPayload, AuthResponse } from 'src/common/types';
@@ -9,6 +9,8 @@ import { jwtAccessConfig, jwtRefreshConfig } from '../../config/jwt.config';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -23,43 +25,55 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<AuthResponse> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    try {
+      this.logger.log(`Login attempt for ${loginDto.email}`);
+      const user = await this.validateUser(loginDto.email, loginDto.password);
+      if (!user) {
+        this.logger.warn(`Invalid credentials for ${loginDto.email}`);
+        throw new UnauthorizedException('Invalid credentials');
+      }
 
-    const payload: JwtPayload = {
-      sub: user.id,
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      privateKey: jwtAccessConfig.privateKey,
-      algorithm: jwtAccessConfig.signOptions.algorithm,
-      expiresIn: jwtAccessConfig.signOptions.expiresIn,
-      issuer: jwtAccessConfig.signOptions.issuer,
-      audience: jwtAccessConfig.signOptions.audience,
-    });
-    const refreshToken = this.jwtService.sign(payload, {
-      privateKey: jwtRefreshConfig.privateKey,
-      algorithm: jwtRefreshConfig.signOptions.algorithm,
-      expiresIn: jwtRefreshConfig.signOptions.expiresIn,
-      issuer: jwtRefreshConfig.signOptions.issuer,
-      audience: jwtRefreshConfig.signOptions.audience,
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        fullName: user.fullName,
+      const payload: JwtPayload = {
+        sub: user.id,
+        userId: user.id,
         email: user.email,
         role: user.role,
-      },
-    };
+      };
+
+      const accessToken = this.jwtService.sign(payload, {
+        privateKey: jwtAccessConfig.privateKey,
+        algorithm: jwtAccessConfig.signOptions.algorithm,
+        expiresIn: jwtAccessConfig.signOptions.expiresIn,
+        issuer: jwtAccessConfig.signOptions.issuer,
+        audience: jwtAccessConfig.signOptions.audience,
+      });
+      const refreshToken = this.jwtService.sign(payload, {
+        privateKey: jwtRefreshConfig.privateKey,
+        algorithm: jwtRefreshConfig.signOptions.algorithm,
+        expiresIn: jwtRefreshConfig.signOptions.expiresIn,
+        issuer: jwtRefreshConfig.signOptions.issuer,
+        audience: jwtRefreshConfig.signOptions.audience,
+      });
+
+      const response = {
+        accessToken,
+        refreshToken,
+        user: {
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        },
+      };
+
+      this.logger.log(`Login success for ${loginDto.email}`);
+      return response;
+    } catch (error) {
+      this.logger.error(
+        `Login failed for ${loginDto.email}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -147,9 +161,12 @@ export class AuthService {
     }
   }
 
-  async changePassword(userId: string, changePasswordDto: { currentPassword: string; newPassword: string }): Promise<void> {
+  async changePassword(
+    userId: string,
+    changePasswordDto: { currentPassword: string; newPassword: string },
+  ): Promise<void> {
     const user = await this.usersService.findOne(userId);
-    
+
     // Verify current password
     const isPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
     if (!isPasswordValid) {
