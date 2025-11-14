@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -6,7 +6,7 @@ services:
     container_name: vinhxuan-postgres
     restart: unless-stopped
     ports:
-      - '5434:5432'
+      - "5434:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -15,7 +15,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,25 +27,24 @@ services:
     container_name: vinhxuan-redis
     restart: unless-stopped
     ports:
-      - '6333:6379'
+      - "6333:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - vinhxuan-network
 
-  # Optional: Redis Commander (Redis GUI)
   redis-commander:
     image: rediscommander/redis-commander:latest
     container_name: vinhxuan-redis-commander
     restart: unless-stopped
     ports:
-      - '8081:8081'
+      - "8081:8081"
     environment:
       - REDIS_HOSTS=local:redis:6379
     depends_on:
@@ -53,21 +52,33 @@ services:
     networks:
       - vinhxuan-network
 
-  # Optional: pgAdmin (PostgreSQL GUI)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: vinhxuan-pgadmin
     restart: unless-stopped
     ports:
-      - '5050:80'
+      - "5050:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@vinhxuan.com
       PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - vinhxuan-network
+
+  backend:
+    build: ./apps/backend
+    container_name: vinhxuan-backend
+    restart: unless-stopped
+    ports:
+      - "8830:8830"
+    env_file:
+      - ./apps/backend/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - vinhxuan-network
 
