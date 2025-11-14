@@ -44,6 +44,8 @@ import {
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import { useNews } from '@/hooks/useArticles';
+import { calculateReadTime, extractFirstImage, getPlaceholderImage, generateExcerpt } from '@/lib/article-utils';
 
 // Import images
 import heroImage from '/src/assets/hero-legal.jpg';
@@ -149,81 +151,26 @@ const Landing = () => {
     },
   ];
 
-  // News articles data
-  const newsArticles = [
-    {
-      id: 1,
-      title: 'Thủ tục công chứng hợp đồng mua bán nhà đất mới nhất 2024',
-      excerpt:
-        'Hướng dẫn chi tiết các thủ tục, giấy tờ cần thiết và quy trình công chứng hợp đồng mua bán bất động sản theo quy định mới nhất.',
-      publishDate: '2024-03-15',
-      category: 'Hướng dẫn',
-      readTime: '5 phút đọc',
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop',
-      tags: ['Bất động sản', 'Thủ tục', 'Hướng dẫn'],
-      author: 'Luật sư Nguyễn Văn Minh',
-    },
-    {
-      id: 2,
-      title: 'Những lưu ý quan trọng khi công chứng di chúc',
-      excerpt:
-        'Các điều kiện, thủ tục và lưu ý cần thiết khi thực hiện công chứng di chúc để đảm bảo tính pháp lý và hiệu lực.',
-      publishDate: '2024-03-10',
-      category: 'Tư vấn',
-      readTime: '7 phút đọc',
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop',
-      tags: ['Di chúc', 'Thừa kế', 'Pháp lý'],
-      author: 'Công chứng viên Trần Thị Lan',
-    },
-    {
-      id: 3,
-      title: 'Quy định mới về phí công chứng năm 2024',
-      excerpt:
-        'Cập nhật mức phí công chứng mới nhất theo Thông tư 01/2024/TT-BTP về việc quy định mức thu, chế độ thu, nộp và quản lý phí công chứng.',
-      publishDate: '2024-03-08',
-      category: 'Thông báo',
-      readTime: '4 phút đọc',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop',
-      tags: ['Phí công chứng', 'Quy định', '2024'],
-      author: 'Văn phòng Công chứng Vĩnh Xuân',
-    },
-    {
-      id: 4,
-      title: 'Hướng dẫn công chứng hợp đồng chuyển nhượng quyền sử dụng đất',
-      excerpt:
-        'Quy trình, thủ tục và các giấy tờ cần thiết để thực hiện công chứng hợp đồng chuyển nhượng quyền sử dụng đất một cách nhanh chóng và chính xác.',
-      publishDate: '2024-03-05',
-      category: 'Hướng dẫn',
-      readTime: '6 phút đọc',
-      image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&h=400&fit=crop',
-      tags: ['Chuyển nhượng', 'Quyền sử dụng đất', 'Thủ tục'],
-      author: 'Công chứng viên Lê Văn Đức',
-    },
-    {
-      id: 5,
-      title: 'Công chứng trực tuyến - Xu hướng mới trong dịch vụ công chứng',
-      excerpt:
-        'Tìm hiểu về dịch vụ công chứng trực tuyến, lợi ích và cách thức thực hiện để tiết kiệm thời gian và chi phí cho khách hàng.',
-      publishDate: '2024-03-01',
-      category: 'Công nghệ',
-      readTime: '5 phút đọc',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
-      tags: ['Công chứng trực tuyến', 'Công nghệ', 'Tiện ích'],
-      author: 'Đội ngũ IT - Văn phòng Công chứng Vĩnh Xuân',
-    },
-    {
-      id: 6,
-      title: 'Các trường hợp bắt buộc phải công chứng theo quy định pháp luật',
-      excerpt:
-        'Danh sách đầy đủ các loại hợp đồng, giao dịch bắt buộc phải thực hiện công chứng theo quy định của pháp luật Việt Nam hiện hành.',
-      publishDate: '2024-02-28',
-      category: 'Pháp lý',
-      readTime: '8 phút đọc',
-      image: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&h=400&fit=crop',
-      tags: ['Bắt buộc công chứng', 'Pháp luật', 'Quy định'],
-      author: 'Luật sư Nguyễn Văn Minh',
-    },
-  ];
+  // Fetch latest news articles (limit to 6 for landing page)
+  const { data: newsData, isLoading: isLoadingNews } = useNews({
+    limit: 6,
+    sortBy: 'publishedAt',
+    sortOrder: 'DESC',
+  });
+
+  // Transform API data to match the component's expected format
+  const newsArticles = newsData?.data?.items?.map((article) => ({
+    id: article.id,
+    title: article.title,
+    slug: article.slug,
+    excerpt: article.excerpt || generateExcerpt(article.content, 150),
+    publishDate: article.publishedAt || article.createdAt,
+    category: article.category?.name || 'Tin tức',
+    readTime: calculateReadTime(article.content),
+    image: article.sourceUrl || extractFirstImage(article.content) || getPlaceholderImage(article.category?.name),
+    tags: article.isCrawled ? ['Tin bên ngoài'] : [article.category?.name || 'Tin tức', article.type],
+    author: article.author?.fullName || 'Văn phòng Công chứng Vĩnh Xuân',
+  })) || [];
 
   const achievements = [
     { number: '10+', label: 'Năm kinh nghiệm', icon: Clock },
@@ -632,72 +579,100 @@ const Landing = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
-            {newsArticles.map((article) => (
-              <Card
-                key={article.id}
-                className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden bg-gradient-to-b from-white to-gray-50"
-              >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-primary text-white px-3 py-1 shadow-lg">
-                      {article.category}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <Badge
-                      variant="secondary"
-                      className="bg-white/90 text-gray-700 px-2 py-1 text-xs"
-                    >
-                      <Clock className="w-3 h-3 mr-1" />
-                      {article.readTime}
-                    </Badge>
-                  </div>
-                </div>
-
-                <CardContent className="p-6">
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold text-black mb-3 leading-tight group-hover:text-primary transition-colors">
-                      {article.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 leading-relaxed mb-4">{article.excerpt}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {article.tags.map((tag, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="text-xs px-2 py-1 border-primary/20 text-primary/80"
-                      >
-                        {tag}
+            {isLoadingNews ? (
+              // Loading skeleton
+              [...Array(6)].map((_, index) => (
+                <Card key={index} className="border-0 shadow-lg overflow-hidden animate-pulse">
+                  <div className="bg-gray-200 w-full h-48"></div>
+                  <CardContent className="p-6">
+                    <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4 w-3/4"></div>
+                    <div className="flex gap-2 mb-4">
+                      <div className="h-6 bg-gray-200 rounded w-20"></div>
+                      <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    </div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : newsArticles.length > 0 ? (
+              newsArticles.map((article) => (
+                <Card
+                  key={article.id}
+                  className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg overflow-hidden bg-gradient-to-b from-white to-gray-50"
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-primary text-white px-3 py-1 shadow-lg">
+                        {article.category}
                       </Badge>
-                    ))}
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <Badge
+                        variant="secondary"
+                        className="bg-white/90 text-gray-700 px-2 py-1 text-xs"
+                      >
+                        <Clock className="w-3 h-3 mr-1" />
+                        {article.readTime}
+                      </Badge>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span className="flex items-center">
-                      <Users className="w-4 h-4 mr-1" />
-                      {article.author}
-                    </span>
-                    <span className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(article.publishDate).toLocaleDateString('vi-VN')}
-                    </span>
-                  </div>
+                  <CardContent className="p-6">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold text-black mb-3 leading-tight group-hover:text-primary transition-colors">
+                        {article.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 leading-relaxed mb-4">{article.excerpt}</p>
+                    </div>
 
-                  <Button className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all group">
-                    <FileText className="w-4 h-4 mr-2" />
-                    Đọc chi tiết
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {article.tags.slice(0, 3).map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs px-2 py-1 border-primary/20 text-primary/80"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span className="flex items-center truncate mr-2">
+                        <Users className="w-4 h-4 mr-1 flex-shrink-0" />
+                        <span className="truncate">{article.author}</span>
+                      </span>
+                      <span className="flex items-center flex-shrink-0">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {new Date(article.publishDate).toLocaleDateString('vi-VN')}
+                      </span>
+                    </div>
+
+                    <Button
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold py-3 shadow-lg hover:shadow-xl transition-all group"
+                      asChild
+                    >
+                      <Link to={`/news/${article.slug}`}>
+                        <FileText className="w-4 h-4 mr-2" />
+                        Đọc chi tiết
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500 text-lg">Chưa có bài viết nào</p>
+              </div>
+            )}
           </div>
 
           <div className="text-center mt-12">

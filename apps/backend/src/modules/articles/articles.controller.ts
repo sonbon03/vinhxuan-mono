@@ -442,4 +442,34 @@ export class ArticlesController {
   toggleHidden(@Param('id') id: string) {
     return this.articlesService.toggleHidden(id);
   }
+
+  @Post('seed/fake-articles')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Seed fake articles',
+    description: 'Tạo 20 bài viết mẫu vào database. Chỉ Admin mới có quyền sử dụng.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Đã tạo thành công 20 bài viết mẫu',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'Đã tạo thành công 20 bài viết mẫu',
+        data: {
+          count: 20,
+          articles: [],
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Chỉ Admin mới có quyền seed dữ liệu',
+  })
+  seedFakeArticles(@Req() req: any) {
+    return this.articlesService.seedFakeArticles(req.user.userId);
+  }
 }

@@ -300,10 +300,14 @@ const NewsDetail = () => {
           </header>
 
           {/* Featured Image */}
-          {extractFirstImage(article.content) && (
+          {(article.sourceUrl || extractFirstImage(article.content)) && (
             <div className="aspect-video overflow-hidden rounded-xl shadow-lg">
               <img
-                src={extractFirstImage(article.content) || getPlaceholderImage(article.category?.name)}
+                src={
+                  article.sourceUrl ||
+                  extractFirstImage(article.content) ||
+                  getPlaceholderImage(article.category?.name)
+                }
                 alt={article.title}
                 className="w-full h-full object-cover"
               />
@@ -500,6 +504,7 @@ const NewsDetail = () => {
                       <div className="aspect-video overflow-hidden">
                         <img
                           src={
+                            related.sourceUrl ||
                             extractFirstImage(related.content) ||
                             getPlaceholderImage(related.category?.name)
                           }

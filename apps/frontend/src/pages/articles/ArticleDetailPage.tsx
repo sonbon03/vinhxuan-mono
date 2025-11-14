@@ -220,6 +220,16 @@ const ArticleDetailPage: React.FC = () => {
               </Space>
             </Descriptions.Item>
           )}
+
+          {article.sourceUrl && (
+            <Descriptions.Item label="Hình ảnh" span={2}>
+              <img
+                src={article.sourceUrl}
+                alt={article.title}
+                style={{ maxWidth: '400px', width: '100%', height: 'auto', borderRadius: '8px' }}
+              />
+            </Descriptions.Item>
+          )}
         </Descriptions>
 
         <Divider>Nội dung</Divider>

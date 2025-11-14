@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,9 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useNews, useBreakingNews } from '@/hooks/useArticles';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import articlesService from '@/services/articles.service';
+import { useBreakingNews } from '@/hooks/useArticles';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ArticleCardSkeleton, BreakingNewsSkeleton } from '@/components/ArticleCardSkeleton';
 import {
@@ -42,7 +44,6 @@ import { toast } from 'sonner';
 const News = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [page, setPage] = useState(1);
   const limit = 9;
 
   // Debounce search query to avoid too many API calls
@@ -61,23 +62,40 @@ const News = () => {
   // Fetch breaking news (top 3 latest)
   const { data: breakingNewsData, isLoading: isLoadingBreakingNews } = useBreakingNews(3);
 
-  // Fetch main news articles with filters
+  // Fetch main news articles with infinite query
   const {
     data: newsData,
     isLoading: isLoadingNews,
     error: newsError,
-  } = useNews({
-    page,
-    limit,
-    search: debouncedSearch || undefined,
-    categoryId: selectedCategory !== 'all' ? selectedCategory : undefined,
-    sortBy: 'publishedAt',
-    sortOrder: 'DESC',
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['news', debouncedSearch, selectedCategory],
+    queryFn: ({ pageParam = 1 }) =>
+      articlesService.getNews({
+        page: pageParam,
+        limit,
+        search: debouncedSearch || undefined,
+        categoryId: selectedCategory !== 'all' ? selectedCategory : undefined,
+        sortBy: 'publishedAt',
+        sortOrder: 'DESC',
+      }),
+    getNextPageParam: (lastPage) => {
+      const currentPage = lastPage.data.page;
+      const totalPages = Math.ceil(lastPage.data.total / lastPage.data.limit);
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
+    initialPageParam: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const articles = newsData?.data?.items || [];
-  const total = newsData?.data?.total || 0;
-  const totalPages = Math.ceil(total / limit);
+  // Flatten all pages into a single array
+  const articles = useMemo(() => {
+    return newsData?.pages.flatMap((page) => page.data.items) || [];
+  }, [newsData]);
+
+  const total = newsData?.pages[0]?.data?.total || 0;
 
   // Extract featured article (first one)
   const featuredArticle = articles[0];
@@ -95,16 +113,16 @@ const News = () => {
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    setPage(1); // Reset to first page when changing filters
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setPage(1); // Reset to first page when searching
   };
 
   const handleLoadMore = () => {
-    setPage((prev) => prev + 1);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
   };
 
   // Show error toast if API fails
@@ -330,6 +348,7 @@ const News = () => {
                       <div className="relative aspect-[16/10] mb-4 xs:mb-6 overflow-hidden rounded-lg xs:rounded-none">
                         <img
                           src={
+                            featuredArticle.sourceUrl ||
                             extractFirstImage(featuredArticle.content) ||
                             getPlaceholderImage(featuredArticle.category?.name)
                           }
@@ -435,6 +454,7 @@ const News = () => {
                         <div className="relative aspect-[4/3] mb-3 xs:mb-4 overflow-hidden rounded-lg">
                           <img
                             src={
+                              article.sourceUrl ||
                               extractFirstImage(article.content) ||
                               getPlaceholderImage(article.category?.name)
                             }
@@ -479,14 +499,15 @@ const News = () => {
             )}
 
             {/* Pagination */}
-            {!isLoadingNews && totalPages > 1 && (
+            {!isLoadingNews && (
               <div className="text-center mt-8 xs:mt-12 pt-6 xs:pt-8 border-t border-gray-200">
-                {page < totalPages && (
+                {hasNextPage && (
                   <button
                     onClick={handleLoadMore}
-                    className="px-6 xs:px-8 py-2 xs:py-3 border-2 border-black text-black hover:bg-black hover:text-white transition-colors font-medium text-sm xs:text-base rounded-full"
+                    disabled={isFetchingNextPage}
+                    className="px-6 xs:px-8 py-2 xs:py-3 border-2 border-black text-black hover:bg-black hover:text-white transition-colors font-medium text-sm xs:text-base rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Xem thêm bài viết
+                    {isFetchingNextPage ? 'Đang tải...' : 'Xem thêm bài viết'}
                   </button>
                 )}
                 <p className="text-xs xs:text-sm text-gray-500 mt-3 xs:mt-4">
