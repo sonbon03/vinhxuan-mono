@@ -34,24 +34,56 @@ const KEYS_DIR = join(__dirname, '../../keys');
 let privateKey: string;
 let publicKey: string;
 
+/**
+ * Validate that a key is a valid RSA key
+ */
+function validateRSAKey(key: string, keyType: 'private' | 'public'): void {
+  if (!key || typeof key !== 'string' || key.trim().length === 0) {
+    throw new Error(
+      `JWT ${keyType} key is empty or undefined. Please set JWT_${keyType.toUpperCase()}_KEY environment variable.`,
+    );
+  }
+
+  const trimmedKey = key.trim();
+
+  if (keyType === 'private') {
+    if (
+      !trimmedKey.includes('BEGIN PRIVATE KEY') &&
+      !trimmedKey.includes('BEGIN RSA PRIVATE KEY')
+    ) {
+      throw new Error(
+        `JWT private key is not a valid RSA private key. Expected PEM format with "BEGIN PRIVATE KEY" or "BEGIN RSA PRIVATE KEY".\n` +
+          `Current key starts with: ${trimmedKey.substring(0, 50)}...\n` +
+          `Please ensure JWT_PRIVATE_KEY is a valid RSA private key in PEM format.`,
+      );
+    }
+  } else {
+    if (!trimmedKey.includes('BEGIN PUBLIC KEY')) {
+      throw new Error(
+        `JWT public key is not a valid RSA public key. Expected PEM format with "BEGIN PUBLIC KEY".\n` +
+          `Current key starts with: ${trimmedKey.substring(0, 50)}...\n` +
+          `Please ensure JWT_PUBLIC_KEY is a valid RSA public key in PEM format.`,
+      );
+    }
+  }
+}
+
 try {
   // Try to read from environment variables first
   if (process.env.JWT_PRIVATE_KEY && process.env.JWT_PUBLIC_KEY) {
     // Decode from base64 if the key starts with base64:
     // Otherwise use the raw string (PEM format)
     privateKey = process.env.JWT_PRIVATE_KEY.startsWith('base64:')
-      ? Buffer.from(
-          process.env.JWT_PRIVATE_KEY.substring(7),
-          'base64',
-        ).toString('utf8')
+      ? Buffer.from(process.env.JWT_PRIVATE_KEY.substring(7), 'base64').toString('utf8')
       : process.env.JWT_PRIVATE_KEY.replace(/\\n/g, '\n');
 
     publicKey = process.env.JWT_PUBLIC_KEY.startsWith('base64:')
-      ? Buffer.from(
-          process.env.JWT_PUBLIC_KEY.substring(7),
-          'base64',
-        ).toString('utf8')
+      ? Buffer.from(process.env.JWT_PUBLIC_KEY.substring(7), 'base64').toString('utf8')
       : process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n');
+
+    // Validate keys are valid RSA keys
+    validateRSAKey(privateKey, 'private');
+    validateRSAKey(publicKey, 'public');
 
     console.log('✅ JWT RSA keys loaded from environment variables');
   } else {
@@ -69,10 +101,17 @@ try {
       'utf8',
     );
 
+    // Validate keys are valid RSA keys
+    validateRSAKey(privateKey, 'private');
+    validateRSAKey(publicKey, 'public');
+
     console.log('✅ JWT RSA keys loaded from files');
   }
 } catch (error) {
   console.error('❌ Error loading RSA keys:', error);
+  if (error instanceof Error && error.message.includes('JWT')) {
+    throw error; // Re-throw validation errors as-is
+  }
   throw new Error(
     'RSA keys not found. Please either:\n' +
       '1. Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY in .env, OR\n' +
