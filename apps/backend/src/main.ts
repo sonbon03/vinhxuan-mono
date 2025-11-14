@@ -1,3 +1,13 @@
+/**
+ * Load environment variables BEFORE any other imports
+ * This ensures JWT keys and other config are available when modules are loaded
+ */
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load .env file from apps/backend/.env
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
 import { NestFactory } from '@nestjs/core';
 import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';

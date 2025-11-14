@@ -25,7 +25,7 @@ import { dataSourceOptions } from './config/database.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ['apps/backend/.env', '.env'],
     }),
     TypeOrmModule.forRoot(dataSourceOptions as TypeOrmModuleOptions),
     RedisModule,

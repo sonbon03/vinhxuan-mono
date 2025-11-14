@@ -5,7 +5,7 @@ import { JwtPayload, AuthResponse } from 'src/common/types';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { jwtRefreshConfig } from '../../config/jwt.config';
+import { jwtAccessConfig, jwtRefreshConfig } from '../../config/jwt.config';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +35,13 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      privateKey: jwtAccessConfig.privateKey,
+      algorithm: jwtAccessConfig.signOptions.algorithm,
+      expiresIn: jwtAccessConfig.signOptions.expiresIn,
+      issuer: jwtAccessConfig.signOptions.issuer,
+      audience: jwtAccessConfig.signOptions.audience,
+    });
     const refreshToken = this.jwtService.sign(payload, {
       privateKey: jwtRefreshConfig.privateKey,
       algorithm: jwtRefreshConfig.signOptions.algorithm,
@@ -66,7 +72,13 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      privateKey: jwtAccessConfig.privateKey,
+      algorithm: jwtAccessConfig.signOptions.algorithm,
+      expiresIn: jwtAccessConfig.signOptions.expiresIn,
+      issuer: jwtAccessConfig.signOptions.issuer,
+      audience: jwtAccessConfig.signOptions.audience,
+    });
     const refreshToken = this.jwtService.sign(payload, {
       privateKey: jwtRefreshConfig.privateKey,
       algorithm: jwtRefreshConfig.signOptions.algorithm,
@@ -105,7 +117,13 @@ export class AuthService {
         role: user.role,
       };
 
-      const newAccessToken = this.jwtService.sign(newPayload);
+      const newAccessToken = this.jwtService.sign(newPayload, {
+        privateKey: jwtAccessConfig.privateKey,
+        algorithm: jwtAccessConfig.signOptions.algorithm,
+        expiresIn: jwtAccessConfig.signOptions.expiresIn,
+        issuer: jwtAccessConfig.signOptions.issuer,
+        audience: jwtAccessConfig.signOptions.audience,
+      });
       const newRefreshToken = this.jwtService.sign(newPayload, {
         privateKey: jwtRefreshConfig.privateKey,
         algorithm: jwtRefreshConfig.signOptions.algorithm,
