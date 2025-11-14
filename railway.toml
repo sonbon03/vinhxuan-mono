@@ -4,6 +4,6 @@ builder = "dockerfile"
 dockerfilePath = "apps/backend/Dockerfile"
 
 [deploy]
-startCommand = "node /app/apps/backend/dist/main"
+startCommand = "node /app/apps/backend/dist/src/main"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
