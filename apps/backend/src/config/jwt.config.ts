@@ -73,15 +73,25 @@ try {
 
   // Decode from base64 if the key starts with base64:
   // Otherwise use the raw string (PEM format)
-  privateKey = process.env.JWT_PRIVATE_KEY;
-  // .startsWith('base64:')
-  //   ? Buffer.from(process.env.JWT_PRIVATE_KEY.substring(7), 'base64').toString('utf8')
-  //   : process.env.JWT_PRIVATE_KEY.replace(/\\n/g, '\n');
+  // Also strip surrounding quotes if they exist
+  let rawPrivateKey = process.env.JWT_PRIVATE_KEY;
+  let rawPublicKey = process.env.JWT_PUBLIC_KEY;
 
-  publicKey = process.env.JWT_PUBLIC_KEY;
-  // .startsWith('base64:')
-  //   ? Buffer.from(process.env.JWT_PUBLIC_KEY.substring(7), 'base64').toString('utf8')
-  //   : process.env.JWT_PUBLIC_KEY.replace(/\\n/g, '\n');
+  // Strip surrounding quotes if present (from .env file)
+  if (rawPrivateKey.startsWith('"') && rawPrivateKey.endsWith('"')) {
+    rawPrivateKey = rawPrivateKey.slice(1, -1);
+  }
+  if (rawPublicKey.startsWith('"') && rawPublicKey.endsWith('"')) {
+    rawPublicKey = rawPublicKey.slice(1, -1);
+  }
+
+  privateKey = rawPrivateKey.startsWith('base64:')
+    ? Buffer.from(rawPrivateKey.substring(7), 'base64').toString('utf8')
+    : rawPrivateKey.replace(/\\n/g, '\n');
+
+  publicKey = rawPublicKey.startsWith('base64:')
+    ? Buffer.from(rawPublicKey.substring(7), 'base64').toString('utf8')
+    : rawPublicKey.replace(/\\n/g, '\n');
 
   // Validate keys are valid RSA keys
   // validateRSAKey(privateKey, 'private');
