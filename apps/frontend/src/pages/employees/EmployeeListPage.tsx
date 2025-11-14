@@ -1,9 +1,8 @@
 import { useRef, useState } from 'react';
-import { Button, Tag, Popconfirm, message, Space, Tooltip } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Button, Tag, message, Space, Tooltip } from 'antd';
+import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { ProTable, ActionType, ProColumns } from '@ant-design/pro-components';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { employeeService, Employee, EmployeeStatus } from '@/services/employee.service';
 import Can from '@/components/Can';
 import dayjs from 'dayjs';
@@ -22,35 +21,8 @@ const statusLabels: Record<EmployeeStatus, string> = {
 
 export default function EmployeeListPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const actionRef = useRef<ActionType>();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
-  // Delete employee mutation
-  const deleteMutation = useMutation({
-    mutationFn: employeeService.deleteEmployee,
-    onSuccess: () => {
-      message.success('Xóa nhân viên thành công!');
-      actionRef.current?.reload();
-      queryClient.invalidateQueries({ queryKey: ['employees'] });
-    },
-    onError: () => {
-      message.error('Xóa nhân viên thất bại!');
-    },
-  });
-
-  // Update status mutation
-  // const updateStatusMutation = useMutation({
-  //   mutationFn: ({ id, status }: { id: string; status: EmployeeStatus }) =>
-  //     employeeService.updateEmployeeStatus(id, status),
-  //   onSuccess: () => {
-  //     message.success('Cập nhật trạng thái thành công!');
-  //     actionRef.current?.reload();
-  //   },
-  //   onError: () => {
-  //     message.error('Cập nhật trạng thái thất bại!');
-  //   },
-  // });
 
   const columns: ProColumns<Employee>[] = [
     {
@@ -165,25 +137,6 @@ export default function EmployeeListPage() {
           >
             Sửa
           </Button>
-        </Can>,
-        <Can key="delete" module="employees" action="delete">
-          <Popconfirm
-            title="Xóa nhân viên"
-            description="Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác!"
-            onConfirm={() => deleteMutation.mutate(record.id)}
-            okText="Xác nhận"
-            cancelText="Hủy"
-          >
-            <Button
-              type="link"
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deleteMutation.isPending}
-            >
-              Xóa
-            </Button>
-          </Popconfirm>
         </Can>,
       ],
     },

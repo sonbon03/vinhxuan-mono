@@ -63,6 +63,13 @@ export default function UserCreatePage() {
       role: values.role,
       password: values.password,
     };
+
+    // Add employee-specific fields if role is ADMIN or STAFF
+    if (values.role === UserRole.ADMIN || values.role === UserRole.STAFF) {
+      data.position = values.position;
+      data.yearsOfExperience = values.yearsOfExperience;
+    }
+
     createMutation.mutate(data);
   };
 
