@@ -73,7 +73,7 @@ export class AuthService {
         `Login failed for ${loginDto.email}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       throw new UnauthorizedException(
-        `Invalid credentials: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Invalid credentials: ${error instanceof Error ? error.message : 'Unknown error'} + publicKey: ${jwtAccessConfig.publicKey} privateKey: ${jwtAccessConfig.privateKey}`,
       );
     }
   }
