@@ -230,22 +230,37 @@ PORT=8830
 
 ### 5. Generate RSA Keys for JWT
 
-Railway automatically reads from environment variables:
+**Option 1: Generate keys for environment variables (Recommended)**
 
 ```bash
-# Generate RSA keys locally
+# Run the key generation script
 cd apps/backend
-chmod +x scripts/generate-rsa-keys.sh
-./scripts/generate-rsa-keys.sh
+./scripts/generate-env-keys.sh
 
-# Copy the keys content
-cat keys/private.pem
-cat keys/public.pem
-
-# Add to Railway environment variables
-JWT_PRIVATE_KEY=<paste-private-key-content>
-JWT_PUBLIC_KEY=<paste-public-key-content>
+# The script will output formatted keys ready to paste into .env
+# Copy the output and add to Railway environment variables:
+# JWT_PRIVATE_KEY=base64:LS0tLS1CRUdJTi...
+# JWT_PUBLIC_KEY=base64:LS0tLS1CRUdJTi...
 ```
+
+**Option 2: Use existing key files**
+
+If you already have RSA key files in `apps/backend/keys/`:
+
+```bash
+# Base64 encode your existing keys
+base64 -i apps/backend/keys/jwt-private.key | tr -d '\n'
+base64 -i apps/backend/keys/jwt-public.key | tr -d '\n'
+
+# Add to Railway with base64: prefix:
+# JWT_PRIVATE_KEY=base64:<encoded-private-key>
+# JWT_PUBLIC_KEY=base64:<encoded-public-key>
+```
+
+**Important:**
+- The backend will prioritize environment variables over key files
+- If env vars are not set, it will fall back to loading from files
+- Use base64 encoding to avoid issues with newlines in .env files
 
 ### 6. Deploy
 
