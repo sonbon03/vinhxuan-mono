@@ -72,7 +72,9 @@ export class AuthService {
       this.logger.error(
         `Login failed for ${loginDto.email}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(
+        `Invalid credentials: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
