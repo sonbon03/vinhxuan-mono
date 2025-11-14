@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Algorithm } from 'jsonwebtoken';
+import { JWT_CONFIG } from './constants.config';
 
 /**
  * JWT Configuration with RSA256 Asymmetric Encryption
@@ -20,6 +21,10 @@ import { Algorithm } from 'jsonwebtoken';
  * - JWT_PRIVATE_KEY: Base64-encoded private key or raw PEM string
  * - JWT_PUBLIC_KEY: Base64-encoded public key or raw PEM string
  * - Fallback: Load from files in keys/ directory if env vars not set
+ *
+ * Token Expiration (hardcoded in constants.config.ts):
+ * - Access Token: 1 day
+ * - Refresh Token: 7 days
  */
 
 // Paths to RSA keys (relative to backend root)
@@ -80,13 +85,14 @@ try {
 /**
  * JWT Access Token Configuration (RSA256)
  * Short-lived token for API authentication
+ * Expiration time is hardcoded in constants.config.ts
  */
 export const jwtAccessConfig = {
   privateKey,
   publicKey,
   signOptions: {
     algorithm: 'RS256' as Algorithm,
-    expiresIn: process.env.JWT_ACCESS_EXPIRY || '1d',
+    expiresIn: JWT_CONFIG.ACCESS_EXPIRY,
     issuer: 'vinhxuan-cms',
     audience: 'vinhxuan-cms-users',
   },
@@ -100,13 +106,14 @@ export const jwtAccessConfig = {
 /**
  * JWT Refresh Token Configuration (RSA256)
  * Long-lived token for obtaining new access tokens
+ * Expiration time is hardcoded in constants.config.ts
  */
 export const jwtRefreshConfig = {
   privateKey,
   publicKey,
   signOptions: {
     algorithm: 'RS256' as Algorithm,
-    expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d',
+    expiresIn: JWT_CONFIG.REFRESH_EXPIRY,
     issuer: 'vinhxuan-cms',
     audience: 'vinhxuan-cms-users',
   },
