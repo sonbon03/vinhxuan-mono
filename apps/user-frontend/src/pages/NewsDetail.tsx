@@ -300,11 +300,11 @@ const NewsDetail = () => {
           </header>
 
           {/* Featured Image */}
-          {(article.sourceUrl || extractFirstImage(article.content)) && (
+          {(article.thumbnail || extractFirstImage(article.content)) && (
             <div className="aspect-video overflow-hidden rounded-xl shadow-lg">
               <img
                 src={
-                  article.sourceUrl ||
+                  article.thumbnail ||
                   extractFirstImage(article.content) ||
                   getPlaceholderImage(article.category?.name)
                 }
@@ -320,10 +320,12 @@ const NewsDetail = () => {
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
           />
 
-          {/* Source URL if crawled */}
-          {article.isCrawled && article.sourceUrl && (
+          {/* Source URL */}
+          {article.sourceUrl && (
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Bài viết gốc từ:</p>
+              <p className="text-sm text-gray-600 mb-2">
+                {article.isCrawled ? 'Bài viết gốc từ:' : 'Nguồn tham khảo:'}
+              </p>
               <a
                 href={article.sourceUrl}
                 target="_blank"
@@ -504,7 +506,7 @@ const NewsDetail = () => {
                       <div className="aspect-video overflow-hidden">
                         <img
                           src={
-                            related.sourceUrl ||
+                            related.thumbnail ||
                             extractFirstImage(related.content) ||
                             getPlaceholderImage(related.category?.name)
                           }

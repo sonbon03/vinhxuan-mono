@@ -71,6 +71,9 @@ export class Article {
   @Column({ type: 'varchar', length: 500, nullable: true })
   sourceUrl: string;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  thumbnail: string;
+
   @Column({ type: 'uuid', nullable: true })
   approverId: string;
 

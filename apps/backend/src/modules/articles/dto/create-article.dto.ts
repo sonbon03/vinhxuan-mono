@@ -1,6 +1,7 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum, IsBoolean, IsUrl, IsUUID, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ArticleType } from '../entities/article.entity';
+import { IsSourceUrlRequired } from '../validators/is-source-url-required.validator';
 
 export class CreateArticleDto {
   @ApiProperty({
@@ -69,11 +70,21 @@ export class CreateArticleDto {
   isCrawled?: boolean;
 
   @ApiProperty({
-    description: 'URL nguồn (nếu bài viết được crawl từ nguồn ngoài)',
+    description: 'URL nguồn (bắt buộc khi loại bài viết là NEWS)',
     example: 'https://example.com/bai-viet-goc',
     required: false,
   })
   @IsUrl({}, { message: 'URL nguồn không hợp lệ' })
+  @IsSourceUrlRequired()
   @IsOptional()
   sourceUrl?: string;
+
+  @ApiProperty({
+    description: 'URL ảnh thumbnail cho bài viết',
+    example: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
+    required: false,
+  })
+  @IsUrl({}, { message: 'URL thumbnail không hợp lệ' })
+  @IsOptional()
+  thumbnail?: string;
 }

@@ -262,7 +262,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
+        sourceUrl: 'https://baophapluat.vn/huong-dan-hop-dong-mua-ban-nha-dat',
+        thumbnail: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
       },
       {
         title: 'Quy định mới về công chứng hợp đồng chuyển nhượng quyền sử dụng đất',
@@ -271,7 +272,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800',
+        sourceUrl: 'https://baophapluat.vn/quy-dinh-cong-chung-chuyen-nhuong-dat',
+        thumbnail: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800',
       },
       {
         title: 'Thủ tục công chứng hợp đồng tặng cho tài sản',
@@ -280,7 +282,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
+        sourceUrl: 'https://baophapluat.vn/hop-dong-tang-cho-tai-san',
+        thumbnail: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
       },
       {
         title: 'Kinh nghiệm mua bán căn hộ chung cư an toàn',
@@ -307,7 +310,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=800',
+        sourceUrl: 'https://baophapluat.vn/bieu-phi-cong-chung-2025',
+        thumbnail: 'https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=800',
       },
       {
         title: 'Hướng dẫn làm giấy ủy quyền công chứng',
@@ -316,7 +320,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
+        sourceUrl: 'https://baophapluat.vn/giay-uy-quyen-cong-chung',
+        thumbnail: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800',
       },
       {
         title: 'Thủ tục công chứng hợp đồng thế chấp',
@@ -325,7 +330,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=800',
+        sourceUrl: 'https://baophapluat.vn/hop-dong-the-chap',
+        thumbnail: 'https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=800',
       },
       {
         title: 'Chia sẻ kinh nghiệm xử lý tranh chấp đất đai',
@@ -343,7 +349,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800',
+        sourceUrl: 'https://baophapluat.vn/di-san-thua-ke',
+        thumbnail: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800',
       },
       {
         title: 'Những lưu ý khi ký hợp đồng mua bán xe ô tô',
@@ -361,7 +368,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800',
+        sourceUrl: 'https://baophapluat.vn/hop-dong-thue-nha',
+        thumbnail: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800',
       },
       {
         title: 'Tư vấn về hợp đồng đặt cọc mua nhà',
@@ -380,6 +388,7 @@ export class ArticlesService {
         status: ArticleStatus.PUBLISHED,
         isCrawled: true,
         sourceUrl: 'https://baophapluat.vn/hop-dong-kinh-te-2024',
+        thumbnail: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800',
       },
       {
         title: 'Công chứng hợp đồng chia tách tài sản',
@@ -388,7 +397,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
+        sourceUrl: 'https://baophapluat.vn/chia-tach-tai-san',
+        thumbnail: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
       },
       {
         title: 'Kinh nghiệm đầu tư bất động sản năm 2025',
@@ -406,7 +416,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: false,
-        sourceUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800',
+        sourceUrl: 'https://baophapluat.vn/mua-ban-co-phan',
+        thumbnail: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800',
       },
       {
         title: 'Những sai lầm thường gặp khi làm hợp đồng',
@@ -424,7 +435,8 @@ export class ArticlesService {
         type: ArticleType.NEWS,
         status: ArticleStatus.PUBLISHED,
         isCrawled: true,
-        sourceUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800',
+        sourceUrl: 'https://baophapluat.vn/chu-ky-so-cong-chung',
+        thumbnail: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800',
       },
       {
         title: 'Tư vấn pháp lý về hợp đồng xây dựng',

@@ -348,7 +348,7 @@ const News = () => {
                       <div className="relative aspect-[16/10] mb-4 xs:mb-6 overflow-hidden rounded-lg xs:rounded-none">
                         <img
                           src={
-                            featuredArticle.sourceUrl ||
+                            featuredArticle.thumbnail ||
                             extractFirstImage(featuredArticle.content) ||
                             getPlaceholderImage(featuredArticle.category?.name)
                           }
@@ -454,7 +454,7 @@ const News = () => {
                         <div className="relative aspect-[4/3] mb-3 xs:mb-4 overflow-hidden rounded-lg">
                           <img
                             src={
-                              article.sourceUrl ||
+                              article.thumbnail ||
                               extractFirstImage(article.content) ||
                               getPlaceholderImage(article.category?.name)
                             }

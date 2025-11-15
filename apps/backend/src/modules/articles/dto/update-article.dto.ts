@@ -72,4 +72,12 @@ export class UpdateArticleDto {
   @IsUrl({}, { message: 'URL nguồn không hợp lệ' })
   @IsOptional()
   sourceUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL ảnh thumbnail cho bài viết',
+    example: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
+  })
+  @IsUrl({}, { message: 'URL thumbnail không hợp lệ' })
+  @IsOptional()
+  thumbnail?: string;
 }

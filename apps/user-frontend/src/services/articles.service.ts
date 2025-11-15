@@ -26,6 +26,7 @@ export interface Article {
   type: 'NEWS' | 'SHARE' | 'INTERNAL';
   isCrawled: boolean;
   sourceUrl?: string;
+  thumbnail?: string;
   approverId?: string;
   approver?: {
     id: string;

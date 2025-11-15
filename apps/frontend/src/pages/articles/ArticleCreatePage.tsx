@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Form, Input, message, Select } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { Form, Input, message, Select, Upload } from 'antd';
+import { SaveOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { articleService, ArticleType } from '../../services/article.service';
@@ -10,11 +10,14 @@ import 'react-quill/dist/quill.snow.css';
 import { PageContainer } from '@/components/common/PageContainer';
 import { FormSection } from '@/components/common/FormSection';
 import { FormActionBar } from '@/components/common/FormActionBar';
+import type { UploadFile, UploadProps } from 'antd';
 
 const ArticleCreatePage: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [content, setContent] = useState('');
+  const [thumbnailFileList, setThumbnailFileList] = useState<UploadFile[]>([]);
+  const [previewImage, setPreviewImage] = useState<string>('');
 
   // Fetch categories for articles
   const { data: categoriesData } = useQuery({
@@ -46,13 +49,48 @@ const ArticleCreatePage: React.FC = () => {
     form.setFieldsValue({ slug });
   };
 
+  // Handle thumbnail upload
+  const handleThumbnailChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setThumbnailFileList(newFileList);
+  };
+
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('Bạn chỉ có thể tải lên file ảnh!');
+      return false;
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Ảnh phải nhỏ hơn 5MB!');
+      return false;
+    }
+
+    // Convert to base64 for preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    return false; // Prevent auto upload
+  };
+
   const handleSubmit = async (values: any) => {
+    // Convert image to base64 if uploaded
+    let thumbnailUrl = values.thumbnail;
+    if (thumbnailFileList.length > 0 && previewImage) {
+      thumbnailUrl = previewImage;
+    }
+
     const data = {
       title: values.title,
       slug: values.slug,
       content: content,
       categoryId: values.categoryId,
       type: values.type || ArticleType.NEWS,
+      sourceUrl: values.sourceUrl,
+      thumbnail: thumbnailUrl,
     };
 
     createMutation.mutate(data);
@@ -158,6 +196,61 @@ const ArticleCreatePage: React.FC = () => {
               <Select.Option value={ArticleType.SHARE}>Chia sẻ</Select.Option>
               <Select.Option value={ArticleType.INTERNAL}>Nội bộ</Select.Option>
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
+          >
+            {({ getFieldValue }) =>
+              getFieldValue('type') === ArticleType.NEWS && (
+                <Form.Item
+                  name="sourceUrl"
+                  label="URL nguồn"
+                  rules={[
+                    { required: true, message: 'URL nguồn là bắt buộc khi loại bài viết là Tin tức!' },
+                    { type: 'url', message: 'Vui lòng nhập URL hợp lệ!' },
+                  ]}
+                  help="URL bài viết gốc từ nguồn tin tức"
+                >
+                  <Input
+                    placeholder="https://example.com/bai-viet-goc"
+                    size="large"
+                  />
+                </Form.Item>
+              )
+            }
+          </Form.Item>
+
+          <Form.Item
+            name="thumbnail"
+            label="Ảnh thumbnail"
+            help="Tải lên ảnh đại diện cho bài viết (tối đa 5MB)"
+          >
+            <Upload
+              listType="picture-card"
+              fileList={thumbnailFileList}
+              onChange={handleThumbnailChange}
+              beforeUpload={beforeUpload}
+              maxCount={1}
+              accept="image/*"
+            >
+              {thumbnailFileList.length === 0 && (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
+                </div>
+              )}
+            </Upload>
+            {previewImage && (
+              <div style={{ marginTop: 16 }}>
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8 }}
+                />
+              </div>
+            )}
           </Form.Item>
         </FormSection>
 

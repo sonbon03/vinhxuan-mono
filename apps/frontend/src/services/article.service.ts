@@ -35,6 +35,7 @@ export interface Article {
   type: ArticleType;
   isCrawled: boolean;
   sourceUrl: string | null;
+  thumbnail: string | null;
   approverId: string | null;
   approver: {
     id: string;
@@ -54,6 +55,7 @@ export interface CreateArticleData {
   type?: ArticleType;
   isCrawled?: boolean;
   sourceUrl?: string;
+  thumbnail?: string;
 }
 
 export interface UpdateArticleData {
@@ -64,6 +66,7 @@ export interface UpdateArticleData {
   type?: ArticleType;
   status?: ArticleStatus;
   sourceUrl?: string;
+  thumbnail?: string;
 }
 
 export interface QueryArticlesParams {

@@ -167,7 +167,7 @@ const Landing = () => {
     publishDate: article.publishedAt || article.createdAt,
     category: article.category?.name || 'Tin tức',
     readTime: calculateReadTime(article.content),
-    image: article.sourceUrl || extractFirstImage(article.content) || getPlaceholderImage(article.category?.name),
+    image: article.thumbnail || extractFirstImage(article.content) || getPlaceholderImage(article.category?.name),
     tags: article.isCrawled ? ['Tin bên ngoài'] : [article.category?.name || 'Tin tức', article.type],
     author: article.author?.fullName || 'Văn phòng Công chứng Vĩnh Xuân',
   })) || [];

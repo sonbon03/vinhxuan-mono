@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Form, Input, Button, Card, Space, message, Select, Spin } from 'antd';
-import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, Space, message, Select, Spin, Upload } from 'antd';
+import { ArrowLeftOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { articleService, ArticleType, ArticleStatus } from '../../services/article.service';
@@ -8,6 +8,7 @@ import { categoryService } from '../../services/category.service';
 import { usePermissions } from '../../hooks/usePermissions';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import type { UploadFile, UploadProps } from 'antd';
 
 const ArticleEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const ArticleEditPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { isAdmin } = usePermissions();
   const [content, setContent] = useState('');
+  const [thumbnailFileList, setThumbnailFileList] = useState<UploadFile[]>([]);
+  const [previewImage, setPreviewImage] = useState<string>('');
 
   // Fetch article data
   const { data: article, isLoading } = useQuery({
@@ -38,8 +41,19 @@ const ArticleEditPage: React.FC = () => {
         slug: article.slug,
         categoryId: article.categoryId,
         type: article.type,
+        sourceUrl: article.sourceUrl,
+        thumbnail: article.thumbnail,
       });
       setContent(article.content);
+
+      // Set preview image if thumbnail exists
+      if (article.thumbnail) {
+        setPreviewImage(article.thumbnail);
+        // If it's a URL, don't set file list
+        if (!article.thumbnail.startsWith('data:')) {
+          setThumbnailFileList([]);
+        }
+      }
     }
   }, [article, form]);
 
@@ -68,13 +82,48 @@ const ArticleEditPage: React.FC = () => {
     form.setFieldsValue({ slug });
   };
 
+  // Handle thumbnail upload
+  const handleThumbnailChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setThumbnailFileList(newFileList);
+  };
+
+  const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('Bạn chỉ có thể tải lên file ảnh!');
+      return false;
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Ảnh phải nhỏ hơn 5MB!');
+      return false;
+    }
+
+    // Convert to base64 for preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    return false; // Prevent auto upload
+  };
+
   const handleSubmit = async (values: any) => {
+    // Convert image to base64 if uploaded
+    let thumbnailUrl = values.thumbnail;
+    if (thumbnailFileList.length > 0 && previewImage) {
+      thumbnailUrl = previewImage;
+    }
+
     const data = {
       title: values.title,
       slug: values.slug,
       content: content,
       categoryId: values.categoryId,
       type: values.type,
+      sourceUrl: values.sourceUrl,
+      thumbnail: thumbnailUrl,
     };
 
     updateMutation.mutate(data);
@@ -220,6 +269,61 @@ const ArticleEditPage: React.FC = () => {
               <Select.Option value={ArticleType.SHARE}>Chia sẻ</Select.Option>
               <Select.Option value={ArticleType.INTERNAL}>Nội bộ</Select.Option>
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
+          >
+            {({ getFieldValue }) =>
+              getFieldValue('type') === ArticleType.NEWS && (
+                <Form.Item
+                  name="sourceUrl"
+                  label="URL nguồn"
+                  rules={[
+                    { required: true, message: 'URL nguồn là bắt buộc khi loại bài viết là Tin tức!' },
+                    { type: 'url', message: 'Vui lòng nhập URL hợp lệ!' },
+                  ]}
+                  help="URL bài viết gốc từ nguồn tin tức"
+                >
+                  <Input
+                    placeholder="https://example.com/bai-viet-goc"
+                    size="large"
+                  />
+                </Form.Item>
+              )
+            }
+          </Form.Item>
+
+          <Form.Item
+            name="thumbnail"
+            label="Ảnh thumbnail"
+            help="Tải lên ảnh đại diện cho bài viết (tối đa 5MB)"
+          >
+            <Upload
+              listType="picture-card"
+              fileList={thumbnailFileList}
+              onChange={handleThumbnailChange}
+              beforeUpload={beforeUpload}
+              maxCount={1}
+              accept="image/*"
+            >
+              {thumbnailFileList.length === 0 && (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
+                </div>
+              )}
+            </Upload>
+            {previewImage && (
+              <div style={{ marginTop: 16 }}>
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8 }}
+                />
+              </div>
+            )}
           </Form.Item>
 
           <Form.Item

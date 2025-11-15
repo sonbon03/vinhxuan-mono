@@ -209,22 +209,23 @@ const ArticleDetailPage: React.FC = () => {
           )}
 
           {article.isCrawled && (
-            <Descriptions.Item label="Nguồn" span={2}>
-              <Space direction="vertical">
-                <Tag color="orange">Bài viết được crawl</Tag>
-                {article.sourceUrl && (
-                  <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer">
-                    {article.sourceUrl}
-                  </a>
-                )}
-              </Space>
+            <Descriptions.Item label="Bài crawl" span={2}>
+              <Tag color="orange">Bài viết được crawl từ nguồn ngoài</Tag>
             </Descriptions.Item>
           )}
 
           {article.sourceUrl && (
-            <Descriptions.Item label="Hình ảnh" span={2}>
+            <Descriptions.Item label="URL nguồn" span={2}>
+              <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer">
+                {article.sourceUrl}
+              </a>
+            </Descriptions.Item>
+          )}
+
+          {article.thumbnail && (
+            <Descriptions.Item label="Hình ảnh thumbnail" span={2}>
               <img
-                src={article.sourceUrl}
+                src={article.thumbnail}
                 alt={article.title}
                 style={{ maxWidth: '400px', width: '100%', height: 'auto', borderRadius: '8px' }}
               />

@@ -80,12 +80,12 @@ const ArticleListPage: React.FC = () => {
   const columns: ProColumns<Article>[] = [
     {
       title: 'Hình ảnh',
-      dataIndex: 'sourceUrl',
-      key: 'sourceUrl',
+      dataIndex: 'thumbnail',
+      key: 'thumbnail',
       width: 100,
       search: false,
       render: (_, record) => {
-        const imageUrl = record.sourceUrl || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800';
+        const imageUrl = record.thumbnail || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800';
         return (
           <img
             src={imageUrl}
