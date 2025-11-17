@@ -13,7 +13,7 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_DATABASE || 'vinhxuan_db',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
-  synchronize: process.env.NODE_ENV === 'development', // Only in development
+  synchronize: false, // IMPORTANT: Disable synchronize, use migrations instead
   logging: process.env.NODE_ENV === 'development',
   migrationsTableName: 'migrations_history',
   migrationsRun: false, // Run migrations manually

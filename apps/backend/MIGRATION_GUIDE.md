@@ -1,308 +1,285 @@
-# Database Migration Guide
+# 🚀 Migration Quick Start Guide
 
-This guide explains how to work with TypeORM migrations in the VinhXuan CMS backend.
+## 📁 Cấu trúc Migration
 
-## Overview
+Các file migration được lưu tại: `src/database/migrations/`
 
-The project uses TypeORM migrations to manage database schema changes in a version-controlled way. Migrations are stored in `src/database/migrations/` and tracked in the `migrations_history` table.
+```
+src/database/migrations/
+├── .gitkeep
+└── 1731244716000-InitialSchema.ts  (migration đầu tiên)
+```
 
-## Available Commands
+## 🔧 Các lệnh quan trọng
 
-### 1. Generate Migration
-
-Creates a new migration file by comparing your entities with the current database schema:
-
+### 1️⃣ Tạo Migration mới
 ```bash
-npm run migration:generate -- MigrationName
+npm run migration:generate <TenMigration>
 ```
 
-**Example:**
+**Ví dụ:**
 ```bash
-npm run migration:generate -- AddUserPhoneField
+npm run migration:generate AddPhoneToUser
+npm run migration:generate CreateEmployeeTable
+npm run migration:generate UpdateServicePricing
 ```
 
-**What it does:**
-- Compares TypeORM entities (`*.entity.ts`) with the current database schema
-- Generates SQL queries for the differences (up and down migrations)
-- Creates a timestamped migration file in `src/database/migrations/`
-- File format: `{timestamp}-{MigrationName}.ts`
-
-**Note:** If no changes are detected, it will display:
+✅ File migration sẽ được tạo tự động trong `src/database/migrations/` với format:
 ```
-No changes in database schema were found - cannot generate a migration.
+<timestamp>-<TenMigration>.ts
 ```
 
-### 2. Run Migrations
-
-Executes all pending migrations:
-
+### 2️⃣ Chạy Migrations (Apply vào database)
 ```bash
 npm run migration:run
 ```
 
-**What it does:**
-- Checks the `migrations_history` table for already-executed migrations
-- Runs all pending migrations in chronological order
-- Updates the `migrations_history` table
-- Wraps all migrations in a transaction (all or nothing)
-
-**Output examples:**
-```
-No pending migrations found.
-```
-
-Or if migrations were executed:
-```
-Successfully executed 2 migrations:
-  - AddUserPhoneField1731244716000
-  - UpdateArticleStatus1731244816000
-```
-
-### 3. Other Useful Commands
-
-**Schema Sync (Development Only):**
+### 3️⃣ Rollback Migration (Hoàn tác)
 ```bash
-npm run schema:sync
+npm run migration:revert
 ```
-⚠️ **Warning:** This will auto-synchronize your database schema. Only use in development!
+**Lưu ý:** Chỉ rollback được 1 migration gần nhất. Muốn rollback nhiều migrations thì phải chạy lệnh này nhiều lần.
 
-**Schema Drop (Dangerous):**
+### 4️⃣ Xem trạng thái Migrations
 ```bash
-npm run schema:drop
+npm run migration:show
 ```
-⚠️ **Warning:** This will drop all tables! Use with extreme caution!
 
-**Run Seeders:**
-```bash
-npm run seed:run
-```
-Populates the database with initial data (admin user, test data, etc.)
+Kết quả sẽ hiển thị:
+- ✅ `[X]` - Đã chạy
+- ⏳ `[ ]` - Chưa chạy
 
-## Migration Workflow
+## 📝 Quy trình làm việc thực tế
 
-### Step 1: Modify Entity
+### Scenario 1: Thêm field mới vào Entity
 
-Edit or create an entity file (e.g., `src/modules/users/entities/user.entity.ts`):
-
+**Bước 1:** Sửa Entity (ví dụ: User entity)
 ```typescript
+// src/modules/users/entities/user.entity.ts
 @Entity('users')
 export class User {
+  // ... existing fields ...
+  
+  @Column({ nullable: true })
+  phone: string; // ➕ Thêm field mới
+}
+```
+
+**Bước 2:** Generate migration
+```bash
+npm run migration:generate AddPhoneToUser
+```
+
+**Bước 3:** Kiểm tra file migration vừa tạo
+```bash
+ls -la src/database/migrations/
+```
+
+**Bước 4:** Review migration file
+```typescript
+// src/database/migrations/1731244716000-AddPhoneToUser.ts
+export class AddPhoneToUser1731244716000 implements MigrationInterface {
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "users" ADD "phone" character varying`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "phone"`);
+    }
+}
+```
+
+**Bước 5:** Apply migration
+```bash
+npm run migration:run
+```
+
+### Scenario 2: Tạo Entity mới hoàn toàn
+
+**Bước 1:** Tạo Entity mới
+```typescript
+// src/modules/products/entities/product.entity.ts
+@Entity('products')
+export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
-  email: string;
+  @Column()
+  name: string;
 
-  // New field added
-  @Column({ nullable: true })
-  phoneNumber: string;
+  @Column('decimal')
+  price: number;
 }
 ```
 
-### Step 2: Generate Migration
-
+**Bước 2:** Generate migration
 ```bash
-npm run migration:generate -- AddPhoneNumberToUser
+npm run migration:generate CreateProductTable
 ```
 
-This creates: `src/database/migrations/1731244716000-AddPhoneNumberToUser.ts`
-
-### Step 3: Review Migration
-
-Open the generated file and verify the SQL:
-
-```typescript
-export class AddPhoneNumberToUser1731244716000 implements MigrationInterface {
-    name = 'AddPhoneNumberToUser1731244716000'
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "users" ADD "phoneNumber" character varying`);
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "phoneNumber"`);
-    }
-}
-```
-
-### Step 4: Run Migration
-
+**Bước 3:** Apply migration
 ```bash
 npm run migration:run
 ```
 
-### Step 5: Commit to Version Control
+### Scenario 3: Rollback khi có lỗi
+
+**Trường hợp:** Migration vừa chạy gây lỗi hoặc sai logic
 
 ```bash
-git add src/database/migrations/
-git commit -m "Add phone number field to users"
+# Rollback migration gần nhất
+npm run migration:revert
 ```
 
-## Manual Migration Creation
+**Sau đó:**
+1. Sửa lại Entity
+2. Xóa file migration cũ (nếu cần)
+3. Generate migration mới
+4. Chạy lại migration
 
-If you need to write custom SQL (not auto-generated), create a file manually:
+## ⚠️ Lưu ý quan trọng
 
-```typescript
-// src/database/migrations/1731244716000-CustomMigration.ts
-import { MigrationInterface, QueryRunner } from 'typeorm';
+### ✅ DO (Nên làm)
+- ✅ Luôn review file migration trước khi chạy
+- ✅ Test migration trên local trước khi deploy
+- ✅ Commit migration files vào Git
+- ✅ Sử dụng tên migration có ý nghĩa (AddPhoneToUser, CreateProductTable...)
+- ✅ Kiểm tra method `down()` để đảm bảo có thể rollback
+- ✅ Backup database trước khi chạy migration trên production
 
-export class CustomMigration1731244716000 implements MigrationInterface {
-    name = 'CustomMigration1731244716000'
+### ❌ DON'T (Không nên làm)
+- ❌ Không sửa migration đã chạy trên production
+- ❌ Không xóa migration đã commit
+- ❌ Không sử dụng `synchronize: true` trong production
+- ❌ Không skip migration khi pull code mới
+- ❌ Không chạy migration trực tiếp trên production mà không backup
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        // Your custom SQL here
-        await queryRunner.query(`
-            CREATE INDEX idx_users_email ON users(email);
-        `);
-    }
+## 🔍 Troubleshooting
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        // Reverse the changes
-        await queryRunner.query(`
-            DROP INDEX idx_users_email;
-        `);
-    }
-}
-```
+### Problem 1: "No changes in database schema were found"
 
-## Migration Scripts Location
+**Nguyên nhân:** Entity đã sync với database rồi, không có thay đổi
 
-- **Generate script:** `src/database/scripts/generate-migration.ts`
-- **Run script:** `src/database/scripts/run-migrations.ts`
-- **Migrations folder:** `src/database/migrations/`
+**Giải pháp:**
+- Kiểm tra lại entity có thay đổi không
+- Chạy `npm run typecheck` để kiểm tra lỗi TypeScript
+- Restart backend server nếu cần
 
-## Database Configuration
+### Problem 2: Migration conflict
 
-The migration scripts use the configuration from `src/config/database.config.ts`:
+**Nguyên nhân:** Có người khác đã tạo migration
 
-```typescript
-export const dataSourceOptions: DataSourceOptions = {
-  type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 5434,
-  username: process.env.DB_USERNAME || 'postgres',
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE || 'vinhxuan_db',
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
-  synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development',
-  migrationsTableName: 'migrations_history',
-  migrationsRun: false, // Run migrations manually
-};
-```
-
-## Best Practices
-
-### ✅ DO:
-
-1. **Always generate migrations** when changing entity structure
-2. **Review generated migrations** before running them
-3. **Test migrations** on a development database first
-4. **Commit migrations** to version control
-5. **Run migrations** as part of your deployment process
-6. **Write reversible migrations** (proper `down()` method)
-
-### ❌ DON'T:
-
-1. **Don't use synchronize in production** (`synchronize: false` in production)
-2. **Don't edit old migrations** that have already been run
-3. **Don't delete migrations** from the migrations folder
-4. **Don't run schema:sync in production**
-5. **Don't commit changes without migrations**
-
-## Troubleshooting
-
-### Issue: "No changes in database schema were found"
-
-**Cause:** Your entities match the current database schema.
-
-**Solution:**
-- Make sure you modified the entity file correctly
-- Check if the change was already applied to the database
-- Verify the entity is imported in the module
-
-### Issue: Migration fails to run
-
-**Cause:** SQL error or invalid migration code.
-
-**Solution:**
-- Check the error message for SQL syntax errors
-- Verify the database connection settings
-- Make sure the database user has sufficient permissions
-- Check if the migration was already partially executed
-
-### Issue: TypeORM can't find entities
-
-**Cause:** Path configuration issue.
-
-**Solution:**
-- Check `entities` path in `database.config.ts`
-- Verify entity files have `.entity.ts` extension
-- Make sure entities are properly exported
-
-## Production Deployment
-
-For production deployments, include migration execution in your deployment script:
-
+**Giải pháp:**
 ```bash
-#!/bin/bash
-# deploy.sh
-
-# 1. Pull latest code
 git pull origin main
-
-# 2. Install dependencies
-npm install
-
-# 3. Run migrations
 npm run migration:run
-
-# 4. Build application
-npm run build
-
-# 5. Restart application
-pm2 restart backend
 ```
 
-## Docker Deployment
+### Problem 3: Migration fail
 
-When using Docker, run migrations before starting the application:
+**Nguyên nhân:** SQL lỗi hoặc constraint violation
 
-```dockerfile
-# In your Dockerfile or docker-compose.yml
-CMD ["sh", "-c", "npm run migration:run && npm run start:prod"]
+**Giải pháp:**
+```bash
+# Rollback
+npm run migration:revert
+
+# Sửa lại entity và generate lại
+npm run migration:generate FixedMigration
 ```
 
-Or use a separate migration service in docker-compose:
+## 📊 Best Practices
 
-```yaml
-services:
-  migration:
-    build: .
-    command: npm run migration:run
-    depends_on:
-      - postgres
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=vinhxuan_db
+### 1. Naming Convention
+```bash
+# Good ✅
+npm run migration:generate AddEmailToUser
+npm run migration:generate CreateProductTable
+npm run migration:generate UpdateServicePricing
+npm run migration:generate AddIndexToUserEmail
 
-  backend:
-    build: .
-    command: npm run start:prod
-    depends_on:
-      - migration
-      - postgres
+# Bad ❌
+npm run migration:generate Update
+npm run migration:generate Fix
+npm run migration:generate Changes
 ```
 
-## Summary
+### 2. Migration Size
+- Chia nhỏ migrations
+- Mỗi migration nên focus vào 1 thay đổi cụ thể
+- Tránh migration quá lớn và phức tạp
 
-The migration system is already set up and ready to use. The two main commands you need are:
+### 3. Data Migration
+- Nếu cần migrate data, viết logic trong migration
+- Test kỹ trên local với data thật
+- Có backup plan
 
-1. **Generate migration:** `npm run migration:generate -- MigrationName`
-2. **Run migrations:** `npm run migration:run`
+### 4. Team Workflow
+```bash
+# Developer A
+git checkout -b feature/add-phone
+# Sửa entity và tạo migration
+npm run migration:generate AddPhone
+git add .
+git commit -m "feat: add phone field to user"
+git push
 
-These commands will help you manage database schema changes in a safe, version-controlled manner.
+# Developer B (sau khi pull code)
+git pull origin main
+npm run migration:run  # Apply migration của Developer A
+```
+
+## 🎯 Common Use Cases
+
+### Add Column
+```typescript
+@Column({ nullable: true })
+newField: string;
+```
+```bash
+npm run migration:generate AddNewField
+```
+
+### Remove Column
+```typescript
+// Xóa field trong entity
+```
+```bash
+npm run migration:generate RemoveOldField
+```
+
+### Rename Column
+```typescript
+@Column({ name: 'new_name' })
+newName: string; // rename từ old_name
+```
+```bash
+npm run migration:generate RenameColumn
+```
+
+### Add Index
+```typescript
+@Index()
+@Column()
+email: string;
+```
+```bash
+npm run migration:generate AddEmailIndex
+```
+
+### Add Foreign Key
+```typescript
+@ManyToOne(() => User)
+user: User;
+```
+```bash
+npm run migration:generate AddUserRelation
+```
+
+---
+
+**🎉 Done! Bây giờ bạn đã sẵn sàng làm việc với migrations.**
+
+**📚 Đọc thêm:**
+- [TypeORM Migrations Documentation](https://typeorm.io/migrations)
+- [Database README](./src/database/README.md)

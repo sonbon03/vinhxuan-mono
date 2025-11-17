@@ -1,67 +1,135 @@
-# Vinh Xuan CMS - Backend API
+# 🏢 Vinh Xuan CMS - Backend API
 
-Backend API for the Vinh Xuan Legal Services Content Management System.
+NestJS Backend application cho hệ thống quản lý dịch vụ công chứng Vinh Xuân.
 
-## Tech Stack
+## 📚 Quick Links
 
-- **Framework:** NestJS 10
-- **Database:** PostgreSQL 15
-- **Cache:** Redis 7
-- **ORM:** TypeORM
-- **Authentication:** JWT (Access + Refresh tokens)
-- **Documentation:** Swagger/OpenAPI
+- 📖 [Migration Guide](./MIGRATION_GUIDE.md) - Hướng dẫn chi tiết về migrations
+- ⚡ [Quick Commands](./QUICK_COMMANDS.md) - Tham chiếu nhanh các lệnh
+- ✅ [Setup Summary](./SETUP_SUMMARY.md) - Tổng kết cấu hình hệ thống
+- 🗄️ [Database README](./src/database/README.md) - Chi tiết về database
+- 🔐 [JWT Setup](./JWT-SETUP.md) - Cấu hình JWT với RSA256
+- 🐳 [Docker Setup](./DOCKER_SETUP.md) - Docker configuration
 
-## Quick Start
+## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
-
+### 1. Cài đặt
 ```bash
-# Run setup script
-./scripts/setup-dev.sh
-
-# Start backend
-yarn dev
+npm install
 ```
 
-That's it! The script will:
-- Start PostgreSQL and Redis in Docker
-- Install dependencies
-- Run migrations
-- Set up the development environment
-
-### Option 2: Manual Setup
-
-See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed manual setup instructions.
-
-## Prerequisites
-
-- **Node.js** 20+
-- **Yarn** or npm
-- **Docker** (for Option 1) or:
-  - **PostgreSQL** 15+ (for Option 2)
-  - **Redis** 7+ (for Option 2)
-
-## Installation
-
+### 2. Cấu hình môi trường
 ```bash
-# Install dependencies
-yarn install
-
-# Copy environment file
 cp .env.example .env
-
-# Update .env with your configuration
+# Chỉnh sửa .env với thông tin database của bạn
 ```
 
-## Environment Variables
+### 3. Chạy migrations
+```bash
+npm run migration:run
+```
 
-See `.env.example` for all available options. Key variables:
+### 4. Seed database (optional)
+```bash
+npm run seed:run
+```
+
+### 5. Start development server
+```bash
+npm run dev
+```
+
+Server sẽ chạy tại: http://localhost:8830
+
+## 🛠️ Tech Stack
+
+- **Framework:** NestJS 11
+- **Database:** PostgreSQL 14+ (Port 5434)
+- **Cache:** Redis 6+ (Port 6333)
+- **ORM:** TypeORM
+- **Authentication:** JWT with RSA256
+- **Language:** TypeScript 5.1+
+
+## 📋 Available Scripts
+
+### Development
+```bash
+npm run dev              # Start với ts-node
+npm run dev:watch        # Start với nodemon auto-reload
+npm run build            # Build production
+npm run start:prod       # Run production build
+```
+
+### Migrations
+```bash
+npm run migration:generate <Name>  # Tạo migration mới
+npm run migration:run              # Chạy migrations
+npm run migration:revert           # Rollback migration
+npm run migration:show             # Xem trạng thái
+```
+
+### Testing
+```bash
+npm run test             # Unit tests
+npm run test:watch       # Watch mode
+npm run test:cov         # Coverage
+npm run test:e2e         # E2E tests
+```
+
+### Code Quality
+```bash
+npm run lint             # ESLint check
+npm run lint:fix         # Auto-fix
+npm run format           # Prettier format
+npm run typecheck        # TypeScript check
+```
+
+## 🗄️ Database
+
+### Configuration
+- **Host:** localhost
+- **Port:** 5434
+- **Database:** vinhxuan_db
+- **User:** postgres
+
+### Migrations Location
+Tất cả migrations được lưu tại: `src/database/migrations/`
+
+### Migration Workflow
+1. Sửa/tạo entity
+2. `npm run migration:generate <Name>`
+3. Review file migration
+4. `npm run migration:run`
+
+Chi tiết xem [Migration Guide](./MIGRATION_GUIDE.md)
+
+## 📁 Project Structure
+
+```
+src/
+├── modules/              # Feature modules
+│   ├── auth/            # Authentication
+│   ├── users/           # User management
+│   ├── employees/       # Employee management
+│   ├── services/        # Service management
+│   ├── fee-types/       # Fee type management
+│   ├── records/         # Record management
+│   └── ...
+├── common/              # Shared modules
+│   ├── guards/          # Auth guards
+│   ├── decorators/      # Custom decorators
+│   └── filters/         # Exception filters
+├── config/              # Configuration
+│   └── database.config.ts
+└── database/            # Database related
+    ├── migrations/      # Migration files
+    ├── scripts/         # Migration scripts
+    └── seeds/           # Seed data
+```
+
+## 🔐 Environment Variables
 
 ```env
-# Application
-NODE_ENV=development
-PORT=8830
-
 # Database
 DB_HOST=localhost
 DB_PORT=5434
@@ -72,285 +140,80 @@ DB_DATABASE=vinhxuan_db
 # Redis
 REDIS_HOST=localhost
 REDIS_PORT=6333
-REDIS_PASSWORD=
 
 # JWT
-JWT_ACCESS_SECRET=your_access_secret_key
-JWT_ACCESS_EXPIRY=1d
-JWT_REFRESH_SECRET=your_refresh_secret_key
-JWT_REFRESH_EXPIRY=7d
+JWT_ACCESS_TOKEN_EXPIRY=1d
+JWT_REFRESH_TOKEN_EXPIRY=7d
+
+# Server
+PORT=8830
+NODE_ENV=development
 ```
 
-## Development
+## 📖 API Documentation
+
+Sau khi start server, truy cập Swagger UI tại:
+```
+http://localhost:8830/api/docs
+```
+
+## 🧪 Testing
 
 ```bash
-# Start development server (with hot reload)
-yarn dev
+# Unit tests
+npm run test
 
-# Build for production
-yarn build
+# E2E tests
+npm run test:e2e
 
-# Start production server
-yarn start:prod
-
-# Run tests
-yarn test
-
-# Run tests in watch mode
-yarn test:watch
-
-# Run e2e tests
-yarn test:e2e
+# Test coverage
+npm run test:cov
 ```
 
-## Database Migrations
+## 🚢 Deployment
 
+### Production Build
 ```bash
-# Show migration status
-yarn migration:show
-
-# Generate migration from entity changes
-yarn migration:generate src/database/migrations/MigrationName
-
-# Create empty migration
-yarn migration:create src/database/migrations/MigrationName
-
-# Run pending migrations
-yarn migration:run
-
-# Revert last migration
-yarn migration:revert
+npm run build
+npm run start:prod
 ```
 
-## Project Structure
-
-```
-apps/backend/
-├── src/
-│   ├── config/              # Configuration files
-│   │   ├── database.config.ts
-│   │   └── redis.config.ts
-│   ├── database/
-│   │   └── migrations/      # Database migrations
-│   ├── modules/             # Feature modules
-│   │   ├── auth/           # Authentication & authorization
-│   │   ├── users/          # User management
-│   │   ├── employees/      # Employee management
-│   │   ├── services/       # Service catalog
-│   │   ├── categories/     # Categories
-│   │   ├── document-groups/ # Document groups for fee types
-│   │   ├── fee-types/      # Fee type management
-│   │   ├── fee-calculations/ # Fee calculator
-│   │   ├── records/        # Notary records
-│   │   ├── articles/       # Articles/news
-│   │   ├── listings/       # User listings
-│   │   ├── consultations/  # Consultation scheduling
-│   │   ├── email-campaigns/ # Email marketing
-│   │   ├── chatbot/        # AI chatbot
-│   │   └── redis/          # Redis service
-│   ├── app.module.ts       # Root module
-│   └── main.ts             # Application entry point
-├── scripts/
-│   ├── setup-dev.sh        # Development setup script
-│   └── cleanup-dev.sh      # Cleanup script
-├── docker-compose.yml      # Docker services configuration
-├── DATABASE_SETUP.md       # Database setup guide
-├── DOCKER_SETUP.md         # Docker setup guide
-└── README.md              # This file
-```
-
-## API Documentation
-
-Once the server is running, visit:
-
-- **Swagger UI:** http://localhost:8830/api/docs
-- **OpenAPI JSON:** http://localhost:8830/api/docs-json
-
-## Available Services
-
-### Docker Services (if using Docker)
-
-- **PostgreSQL:** localhost:5434
-- **Redis:** localhost:6333
-- **pgAdmin:** http://localhost:5050 (admin@vinhxuan.com / admin)
-- **Redis Commander:** http://localhost:8081
-
-## Module Overview
-
-### Authentication & Users
-- `/api/auth` - Login, register, logout, refresh token
-- `/api/users` - User management (Admin/Staff)
-- `/api/employees` - Employee management (Admin)
-
-### Services & Fees
-- `/api/services` - Service catalog
-- `/api/categories` - Categories for articles/records/listings
-- `/api/document-groups` - Document group management
-- `/api/fee-types` - Fee type configuration
-- `/api/fee-calculations` - Fee calculator
-
-### Content Management
-- `/api/records` - Notary record management
-- `/api/articles` - Articles and news
-- `/api/listings` - User listings
-
-### Operations
-- `/api/consultations` - Consultation scheduling
-- `/api/email-campaigns` - Email marketing campaigns
-- `/api/chatbot` - Chatbot messaging
-
-## Redis Features
-
-The `RedisService` provides:
-
-- **Token blacklisting** (for logout)
-- **Session management**
-- **Caching** with TTL
-- **Rate limiting**
-- **Counter operations**
-
-Example usage:
-
-```typescript
-// In your service
-constructor(private readonly redisService: RedisService) {}
-
-// Cache data
-await this.redisService.cache('users:list', users, 3600);
-
-// Get cached data
-const users = await this.redisService.getCached<User[]>('users:list');
-
-// Blacklist token
-await this.redisService.blacklistToken(token, 86400);
-
-// Rate limiting
-const allowed = await this.redisService.checkRateLimit(userId, 100, 60);
-```
-
-## Code Quality
-
+### Migration in Production
 ```bash
-# Lint code
-yarn lint
-
-# Fix lint issues
-yarn lint:fix
-
-# Format code
-yarn format
-
-# Type check
-yarn typecheck
+# Backup database first!
+npm run migration:run
 ```
 
-## Scripts
+## 🐛 Troubleshooting
 
-### Development Setup
+### Migration không detect changes
 ```bash
-./scripts/setup-dev.sh
+npm run typecheck  # Check TypeScript errors
 ```
 
-### Cleanup
-```bash
-# Stop services (keep data)
-./scripts/cleanup-dev.sh
+### Database connection error
+- Kiểm tra PostgreSQL đang chạy
+- Verify `.env` configuration
+- Check port 5434 không bị chiếm
 
-# Stop services and remove data
-./scripts/cleanup-dev.sh --remove-data
-```
+### Redis connection error
+- Kiểm tra Redis đang chạy
+- Check port 6333
 
-## Common Tasks
+## 📚 Learn More
 
-### Reset Database
-```bash
-# Drop and recreate
-yarn schema:drop
-yarn migration:run
-```
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [TypeORM Documentation](https://typeorm.io/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 
-### Clear Redis Cache
-```bash
-# Using Docker
-docker-compose exec redis redis-cli FLUSHALL
+## 👥 Team
 
-# Using local Redis
-redis-cli -p 6333 FLUSHALL
-```
+Vinh Xuan Legal Services Team
 
-### Check Service Status
-```bash
-# Docker services
-docker-compose ps
+## 📄 License
 
-# View logs
-docker-compose logs -f
+UNLICENSED - Private Project
 
-# Check PostgreSQL
-docker-compose exec postgres pg_isready -U postgres
+---
 
-# Check Redis
-docker-compose exec redis redis-cli ping
-```
-
-## Troubleshooting
-
-### Port Already in Use
-
-Change ports in `docker-compose.yml` or `.env` if default ports are occupied.
-
-### Database Connection Issues
-
-1. Check if PostgreSQL is running
-2. Verify credentials in `.env`
-3. Check firewall settings
-
-### Redis Connection Issues
-
-1. Check if Redis is running
-2. Verify port in `.env`
-3. Check password configuration
-
-### Migration Issues
-
-```bash
-# Show migration status
-yarn migration:show
-
-# Revert last migration
-yarn migration:revert
-
-# Drop schema and run migrations fresh (WARNING: deletes all data)
-yarn schema:drop
-yarn migration:run
-```
-
-For more detailed troubleshooting, see:
-- [DATABASE_SETUP.md](./DATABASE_SETUP.md)
-- [DOCKER_SETUP.md](./DOCKER_SETUP.md)
-
-## Production Deployment
-
-1. **Update environment variables** for production
-2. **Disable synchronize** in TypeORM config (already done)
-3. **Enable SSL** for database connections
-4. **Use strong passwords** for JWT secrets
-5. **Enable Redis password** authentication
-6. **Run migrations** before deployment
-7. **Use process manager** (PM2, systemd)
-8. **Set up monitoring** (logs, metrics)
-
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Run tests and linting
-4. Submit a pull request
-
-## License
-
-UNLICENSED - Private project for Vinh Xuan Legal Services
-
-## Support
-
-For issues or questions, contact the development team.
+**Made with ❤️ by Vinh Xuan Team**

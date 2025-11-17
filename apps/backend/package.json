@@ -21,9 +21,12 @@
     "typecheck": "tsc --noEmit",
     "migration:generate": "ts-node --transpile-only -r tsconfig-paths/register src/database/scripts/generate-migration.ts",
     "migration:run": "ts-node --transpile-only -r tsconfig-paths/register src/database/scripts/run-migrations.ts",
-    "schema:sync": "npm run typeorm -- schema:sync -d src/config/database.config.ts",
-    "schema:drop": "npm run typeorm -- schema:drop -d src/config/database.config.ts",
+    "migration:revert": "npm run typeorm migration:revert -- -d typeorm.config.ts",
+    "migration:show": "npm run typeorm migration:show -- -d typeorm.config.ts",
+    "schema:sync": "npm run typeorm schema:sync -- -d typeorm.config.ts",
+    "schema:drop": "npm run typeorm schema:drop -- -d typeorm.config.ts",
     "seed:run": "ts-node -r tsconfig-paths/register src/database/seeds/run-seeds.ts",
+    "typeorm": "ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "keys:generate": "./scripts/generate-rsa-keys.sh"
   },
   "dependencies": {
